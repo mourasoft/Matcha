@@ -1,4 +1,4 @@
-// string validation
+// string validation\
 export function validateStr(str, label) {
 	// name=> {label}
 	// isReq
@@ -29,7 +29,6 @@ export function validateUser(str, label) {
 }
 // email validation
 export function validateEmail(str, label) {
-	//
 	if (!str || str.trim() === "") {
 		return `${label} is required field.`;
 	} else if (
@@ -75,4 +74,9 @@ export function validateConfirm(confirm, pass, label) {
 	else if (confirm !== pass) {
 		return `Passwords not match.`;
 	}
+}
+
+// birth day validator
+export function validateBirthday(){
+	return(null)
 }
