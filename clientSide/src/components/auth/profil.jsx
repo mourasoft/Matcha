@@ -10,10 +10,16 @@ import {
   RadioGroup,
   Radio,
   FormControlLabel,
+  FormControl,
+  FormHelperText,
+  Fab,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CreatableSelect from "react-select/creatable";
+import AddIcon from "@material-ui/icons/Add";
+import test from "../../images/1.png";
+import UpBtn from "../incl/upload";
 // const theme = createMuiTheme({
 // 	palette: {
 // 		primary: {
@@ -53,15 +59,45 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     justifyContent: "center",
   },
+  large: {
+    width: theme.spacing(12),
+    height: theme.spacing(12),
+  },
+  Profile: {
+    flexBasis: "30%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  upload: {
+    display: "none",
+  },
+  buttonUpload: {
+    // display: "flex",
+  },
 }));
-
+const handleCreateOption = (v, a) => {
+  console.log(v);
+  console.log(a);
+};
 const Profile = () => {
   const classes = useStyles();
+  const [uploadImg, setuploadImg] = useState([]);
+  // localisation Data
+
+  const [location, setLocation] = useState({
+    lng: null,
+    lat: null,
+  });
+  // form Data
   const [data, setData] = useState({
     gender: "female",
     preferences: "male",
     biography: "",
     birthday: "",
+    tags: [],
+    img: [],
+    location: { lng: "", lat: "" },
   });
   const handlechange = (e) => {
     const { name, value } = e.target;
@@ -69,13 +105,54 @@ const Profile = () => {
       ...data,
       [name]: value,
     });
-    console.log("the name of value >>>>>", name, "the value is ", value);
+    // console.log("the name of value >>>>>", name, "the value is ", value);
   };
-
+  // useEffect(() => {
+  //   console.log(navigator.geolocation);
+  //   console.log(data.gender);
+  // });
   const handleSubmit = (e) => {
     e.preventDefault();
+    // console.log({ ...data, ...location });
   };
-  console.log(data.gender);
+  // function valudare(img)
+  // {
+  //   djdaajkdaddkd adhaddjjdahjad adjhadjkajadddkdhadhdahjadhad
+  // }
+  // function upload (img)
+  // {
+  //   axios.post('laccacacj/fajfhaj', dadyadyaddy, {image:img}).then(res)
+  //   {
+  //     if (res.data === "done")
+  //     {
+  //       adhadjkadad {
+
+  //       }
+  //       let val = {
+  //         image : img;
+  //       }
+  //       setduadu(uploadImg.concat(val))
+  //     }
+  //     else if (res.data === "no valid")
+  //     {
+  //       swal.fire()
+  //     }
+  //   }
+  // }
+  useEffect(() => {
+    // Update the document title using the browser API
+    setuploadImg([
+      {
+        image: test,
+      },
+    ]);
+  }, []);
+  const handleUpdat = (e) => {
+    console.log(e);
+  };
+  const handlProfileUpdate = (e) => {
+    console.log(e);
+  };
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -84,10 +161,17 @@ const Profile = () => {
         <Typography component="h1" variant="h5">
           Profile
         </Typography>
-        <form className={classes.form} onSubmit={handleSubmit} noValidate>
+        <form
+          className={classes.form}
+          onSubmit={handleSubmit}
+          autoComplete="off"
+          noValidate
+        >
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <FormLabel component="legend">Gender</FormLabel>
+              <FormLabel required component="legend">
+                Gender
+              </FormLabel>
               <RadioGroup
                 className={classes.radio}
                 aria-label="gender"
@@ -113,7 +197,9 @@ const Profile = () => {
               </RadioGroup>
             </Grid>
             <Grid item xs={12}>
-              <FormLabel component="legend">Sexual preferences</FormLabel>
+              <FormLabel required component="legend">
+                Sexual preferences
+              </FormLabel>
               <RadioGroup
                 className={classes.radio}
                 aria-label="gender"
@@ -154,15 +240,16 @@ const Profile = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
+              {/* <TextField
                 variant="outlined"
+                name="tags"
                 required
                 fullWidth
                 id="tags"
                 label="Tags"
                 type="text"
                 name="tags"
-              />
+              /> */}
             </Grid>
             <Grid item xs={12}>
               <TextField
@@ -181,13 +268,56 @@ const Profile = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <CreatableSelect
-                isMulti
-                label="Mouras"
-                // onChange={this.handleChange}
-                // options={colourOptions}
-              />
+              <FormControl fullWidth>
+                <FormLabel required error component="legend">
+                  Tags
+                </FormLabel>
+                <CreatableSelect
+                  isClearable
+                  isMulti
+                  onChange={handleCreateOption}
+                />
+                <FormHelperText error id="my-helper-text">
+                  We'll never share your email.
+                </FormHelperText>
+              </FormControl>
             </Grid>
+            <FormControl fullWidth>
+              <FormLabel required component="legend">
+                profile Picture
+              </FormLabel>
+              <UpBtn />
+              <p>tach</p>
+              {/* <div className={classes.Profile}>
+                {uploadImg?.map((i, index) => (
+                  <div key={index}>
+                    <Avatar
+                      alt="Remy Sharp"
+                      src={i.image}
+                      className={classes.large}
+                      onClick={handlProfileUpdate}
+                    />
+                  </div>
+                ))}
+              </div> */}
+              <FormHelperText error id="my-helper-text">
+                required
+              </FormHelperText>
+            </FormControl>
+            <FormControl className={classes.buttonUpload}>
+              <input
+                accept="image/*"
+                className={classes.upload}
+                id="contained-button-file"
+                multiple
+                type="file"
+              />
+              <label htmlFor="contained-button-file">
+                <Button variant="contained" color="primary" component="span">
+                  Upload
+                </Button>
+              </label>
+            </FormControl>
           </Grid>
           <Button
             type="submit"

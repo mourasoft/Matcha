@@ -4,12 +4,12 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.3",
+    "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
-    "@material-ui/pickers": "^3.3.10",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^12.8.3",
-    "date-fns": "^2.19.0",
+    "axios": "^0.21.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-icons": "^4.2.0",
@@ -17,6 +17,8 @@
     "react-scripts": "4.0.3",
     "react-select": "^4.2.1",
     "styled-components": "^5.2.1",
+    "sweetalert2": "^10.15.6",
+    "sweetalert2-react-content": "^3.3.1",
     "web-vitals": "^1.1.0"
   },
   "scripts": {

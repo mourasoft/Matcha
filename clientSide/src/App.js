@@ -15,8 +15,8 @@ function App() {
       <Navbar />
       <Switch>
         <Route path="/signup" component={SignUp} />
-        <Route path="/profile" component={Profile} />
         <Route path="/signin" component={SignIn} />
+        <Route path="/profile" component={Profile} />
         <Route path="/forgot" component={Forgot} />
         <Route path="/reset" component={Reset} />
         <Route path="/" exact component={Home} />

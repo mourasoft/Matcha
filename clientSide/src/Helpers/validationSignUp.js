@@ -1,30 +1,26 @@
 import {
-	validateStr,
-	validateEmail,
-	validateUser,
-	validatePassword,
-	validateConfirm,
+  validateStr,
+  validateEmail,
+  validateUser,
+  validatePassword,
+  validateConfirm,
 } from "./validators";
 
 export default function validateSignUp({
-	firstName,
-	lastName,
-	email,
-	userName,
-	password,
-	confirm,
+  fname,
+  lname,
+  email,
+  login,
+  passwd,
+  rpasswd,
 }) {
-	const errors = {};
+  const errors = {};
 
-	errors.firstName = validateStr(firstName, "First Name");
-	errors.lastName = validateStr(lastName, "Last Name");
-	errors.email = validateEmail(email, "Email");
-	errors.userName = validateUser(userName, "Username");
-	errors.password = validatePassword(password, "password");
-	errors.confirm = validateConfirm(
-		confirm,
-		password,
-		"confirm"
-	);
-	return errors;
+  errors.firstName = validateStr(fname, "First Name");
+  errors.lastName = validateStr(lname, "Last Name");
+  errors.email = validateEmail(email, "Email");
+  errors.userName = validateUser(login, "Username");
+  errors.password = validatePassword(passwd, "password");
+  errors.confirm = validateConfirm(rpasswd, passwd, "confirm");
+  return errors;
 }

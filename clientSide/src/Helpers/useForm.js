@@ -1,25 +1,33 @@
 // import { useState, useEffect } from "react";
 // import validateSignUp from "./validationsignup";
 
-const useForm = (validate, values, setValues, errors, setErrors) => {
-	// validate => validateur for form
-	// values => values of form
-	// setValues
-	// errors => errors input name
-	// set error
-	const handleChange = (e) => {
-		const { name, value } = e.target;
-		setValues({
-			...values,
-			[name]: value,
-		});
-	};
-	const handleSubmit = (e) => {
-		e.preventDefault();
-		const foundErrors = validate(values);
-		setErrors(foundErrors);
-	};
-	return { handleChange, values, handleSubmit, errors };
+const useForm = (callback, validate, values, setValues, errors, setErrors) => {
+  // validate => validateur for form
+  // values => values of form
+  // setValues
+  // errors => errors input name
+  // set error
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setValues({
+      ...values,
+      [name]: value,
+    });
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const foundErrors = validate(values);
+    setErrors(foundErrors);
+    const filteredByValue = Object.fromEntries(
+      Object.entries(foundErrors).filter(([key, value]) => value !== "")
+    );
+	const errorsLen = Object.keys(filteredByValue).length;
+	console.log(errorsLen)
+    if (!errorsLen) {
+      callback();
+    }
+  };
+  return { handleChange, values, handleSubmit, errors };
 };
 
 export default useForm;

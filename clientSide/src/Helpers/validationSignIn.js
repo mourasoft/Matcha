@@ -1,16 +1,16 @@
 import {
-	validateEmail,
 	validatePassword,
+	validateUser,
 } from "./validators";
 
 export default function validateSignIn({
-	email,
-	password,
+	login,
+	passwd,
 	
 }) {
 	const errors = {};
 
-	errors.email = validateEmail(email, "Email");
-	errors.password = validatePassword(password, "password");
+	errors.login = validateUser(login, "Login");
+	errors.password = validatePassword(passwd, "password");
 	return errors;
 }
