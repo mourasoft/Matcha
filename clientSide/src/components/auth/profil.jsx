@@ -12,12 +12,12 @@ import {
   FormControlLabel,
   FormControl,
   FormHelperText,
-  Fab,
+  // Fab,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useState, useEffect } from "react";
 import CreatableSelect from "react-select/creatable";
-import AddIcon from "@material-ui/icons/Add";
+// import AddIcon from "@material-ui/icons/Add";
 import test from "../../images/1.png";
 import UpBtn from "../incl/upload";
 // const theme = createMuiTheme({
@@ -85,10 +85,10 @@ const Profile = () => {
   const [uploadImg, setuploadImg] = useState([]);
   // localisation Data
 
-  const [location, setLocation] = useState({
-    lng: null,
-    lat: null,
-  });
+  // const [location, setLocation] = useState({
+  //   lng: null,
+  //   lat: null,
+  // });
   // form Data
   const [data, setData] = useState({
     gender: "female",

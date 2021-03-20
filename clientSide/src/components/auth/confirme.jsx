@@ -1,0 +1,48 @@
+import { useEffect } from "react";
+import { useParams, useHistory } from "react-router-dom";
+import axios from "axios";
+import Swal from "sweetalert2";
+
+async function getResponse(login, key) {
+  try {
+    const res = axios.get(
+      `http://10.12.6.3:1337/confirm?login=${login}&key=${key}`
+    );
+    return res;
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+function Confirm() {
+  const { login, key } = useParams();
+  const history = useHistory();
+  console.log(login, key);
+
+  useEffect(() => {
+    const data = async () => {
+      const { data } = await getResponse(login, key);
+      if (data.error === true) {
+        var error = data.message;
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: error,
+        });
+        history.replace("/signin");
+      } else if (data.success === true) {
+        Swal.fire({
+          icon: "success",
+          title: "success",
+          text: "Your Account has ben viryfed",
+        });
+        history.replace("/signin");
+      }
+    };
+    data();
+  }, [login, key]);
+
+  return null;
+}
+
+export default Confirm;

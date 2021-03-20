@@ -7,23 +7,35 @@ import Forgot from "./components/auth/forgot";
 import Reset from "./components/auth/reset";
 import Footer from "./components/incl/footer";
 import Profile from "./components/auth/profil";
-
+import Confirm from "./components/auth/confirme";
+import { useContext } from "react";
+import AuthProvider, { AuthContext } from "./context/authcontext";
 
 function App() {
+  const authContext = useContext(AuthContext);
   return (
     <Router>
       <Navbar />
       <Switch>
         <Route path="/signup" component={SignUp} />
+        <Route path="/confirm/:login/:key" component={Confirm} />
+        <Route path="/reset/:login/:key" exact component={Reset} />
         <Route path="/signin" component={SignIn} />
         <Route path="/profile" component={Profile} />
         <Route path="/forgot" component={Forgot} />
         <Route path="/reset" component={Reset} />
-        <Route path="/" exact component={Home} />
+        <Route path="/" component={Home} />
       </Switch>
       <Footer />
     </Router>
   );
 }
 
-export default App;
+function AppWithStore() {
+  return (
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  );
+}
+export default AppWithStore;

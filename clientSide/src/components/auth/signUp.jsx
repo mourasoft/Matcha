@@ -67,11 +67,9 @@ const SignUp = () => {
   );
 
   function submit() {
-    // console.log("form submitted!");
-    // console.log("values", values);
     axios.post("http://10.12.6.3:1337/users/signup", data).then((res) => {
       if (res) {
-        console.log(res);
+  
         if (res.data.error === true) {
           var error = res.data.message;
           Swal.fire({

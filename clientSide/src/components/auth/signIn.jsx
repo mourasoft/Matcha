@@ -13,7 +13,9 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import useForm from "../../Helpers/useForm";
 import validateSignIn from "../../Helpers/validationSignIn";
-import { useState } from "react";
+import { useState ,useContext} from "react";
+import { useHistory } from "react-router-dom";
+import { AuthContext } from '../../context/authcontext';
 
 // const theme = createMuiTheme({
 // 	palette: {
@@ -54,7 +56,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SignIn = () => {
+  const authContext = useContext(AuthContext);
   const classes = useStyles();
+  const history = useHistory()
   const [data, setData] = useState({
     login: "",
     passwd: "",
@@ -72,31 +76,32 @@ const SignIn = () => {
     setFormErrors
   );
   function submit() {
-    console.log("clicked");
+    // console.log("clicked");
+    // send api request to validat data and get token
     axios.post("http://10.12.6.3:1337/users/signin", data).then((res) => {
       if (res) {
         console.log(res);
-        if (res.data.error === true) {
-          var error = res.data.message;
+        const { message, error, token, success } = res.data;
+        if (error === true) {
+          const error = message;
           Swal.fire({
             icon: "error",
             title: "Oops...",
             text: error,
           });
         }
-        //   else if(res.data.success === true){
-        // 	Swal.fire({
-        // 	  icon: "success",
-        // 	  title: "success",
-        // 	  text: "Your Account Has Ben Created check your Email",
-        // 	});
-        // 	history.replace('/signin')
-        //   }
+        // no error put tokken in local storege and save in local   storege
+        else if (success === true) {
+          const login = data.login
+          localStorage.setItem("token", token);
+          localStorage.setItem("login",login)
+          authContext.setAuth({token,login})
+
+          history.replace("/")
+        }
       }
     });
-    console.log("clicked");
   }
-  //   console.log(values);
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -160,10 +165,6 @@ const SignIn = () => {
           </Grid>
         </form>
       </div>
-      {/* Footer */}
-      {/* <Box mt={5}>
-	  <Copyright />
-	</Box> */}
     </Container>
   );
 };

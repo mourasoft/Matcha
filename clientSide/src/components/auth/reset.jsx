@@ -8,6 +8,12 @@ import {
   Avatar,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import useForm from "../../Helpers/useForm";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Swal from "sweetalert2";
+import validateReset from "../../Helpers/validationReset";
+import { useHistory, useParams } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -30,6 +36,58 @@ const useStyles = makeStyles((theme) => ({
 }));
 const Reset = () => {
   const classes = useStyles();
+  const history = useHistory();
+  const [data, setData] = useState({
+    passwd: "",
+    rpasswd: "",
+  });
+  const [formErrors, setFormErrors] = useState({
+    passwd: "",
+    rpasswd: "",
+  });
+  const { handleChange, values, handleSubmit, errors } = useForm(
+    submit,
+    validateReset,
+    data,
+    setData,
+    formErrors,
+    setFormErrors
+  );
+
+  useEffect(() => {
+    if (login === undefined || key === undefined) {
+      history.push("/signin");
+    }
+  }, []);
+
+  const { login, key } = useParams();
+
+  function submit() {
+    console.log(login, key);
+    axios
+      .post(
+        `http://10.12.6.3:1337/users/changepasswd?login=${login}&key=${key}`,
+        data
+      )
+      .then((res) => {
+        console.log(res);
+        if (res.data.success === false) {
+          var error = res.data.message;
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: error,
+          });
+        } else if (res.data.success === true) {
+          Swal.fire({
+            icon: "success",
+            title: "success",
+            text: "Password Changed successfully",
+          });
+          history.replace("/signin");
+        }
+      });
+  }
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -38,7 +96,7 @@ const Reset = () => {
         <Typography component="h1" variant="h5">
           Account recovery
         </Typography>
-        <form className={classes.form} noValidate>
+        <form className={classes.form} onSubmit={handleSubmit} noValidate>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
@@ -47,8 +105,12 @@ const Reset = () => {
                 fullWidth
                 id="password"
                 label="Password"
-                name="password"
-                autoComplete="password"
+                type="password"
+                name="passwd"
+                defaultValue={values.passwd}
+                onChange={handleChange}
+                error={errors.passwd ? true : false}
+                helperText={errors.passwd && errors.passwd}
               />
             </Grid>
             <Grid item xs={12}>
@@ -57,9 +119,13 @@ const Reset = () => {
                 required
                 fullWidth
                 id="confrim"
+                type="password"
                 label="Confirm"
-                name="confirm"
-                autoComplete="confirm"
+                name="rpasswd"
+                defaultValue={values.rpasswd}
+                onChange={handleChange}
+                error={errors.rpasswd ? true : false}
+                helperText={errors.rpasswd && errors.rpasswd}
               />
             </Grid>
           </Grid>
