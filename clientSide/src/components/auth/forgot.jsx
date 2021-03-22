@@ -14,6 +14,7 @@ import validateForgot from "../../Helpers/validationForgot";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useHistory } from "react-router-dom";
+import config from '../../config'
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -56,7 +57,7 @@ const Forgot = () => {
   function submit() {
     // console.log(object);
     axios
-      .post("http://10.12.6.3:1337/users/reset/password", data)
+      .post(`http://${config.SERVER_HOST}/users/reset/password`, data)
       .then((res) => {
         console.log(res);
         if (res.data.success === false) {

@@ -9,7 +9,7 @@ import Footer from "./components/incl/footer";
 import Profile from "./components/auth/profil";
 import Confirm from "./components/auth/confirme";
 import { useContext } from "react";
-import AuthProvider, { AuthContext } from "./context/authcontext";
+import { AuthProvider, AuthContext } from "./context/authcontext";
 
 function App() {
   const authContext = useContext(AuthContext);

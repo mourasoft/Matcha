@@ -1,10 +1,7 @@
 const showPosition = async (pos) => {
   const { latitude, longitude } = pos.coords;
   setLocation({ latitude, longitude });
-  const country = await handleLocation(latitude, longitude);
-  setUserCountry(country);
 };
-
 const getLocation = async (err) => {
   if (err.code) {
     try {
@@ -12,11 +9,10 @@ const getLocation = async (err) => {
       const {
         latitude,
         longitude,
-        country: { name: country },
       } = await ipLocation(publicLoction);
-      console.log(latitude, longitude, country);
+      console.log(latitude, longitude);
       setLocation({ latitude, longitude });
-      setUserCountry(country);
+      
     } catch (err) {}
   }
 };

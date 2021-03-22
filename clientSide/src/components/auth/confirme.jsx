@@ -2,11 +2,12 @@ import { useEffect } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+import config from '../../config'
 
 async function getResponse(login, key) {
   try {
     const res = axios.get(
-      `http://10.12.6.3:1337/confirm?login=${login}&key=${key}`
+      `http://${config.SERVER_HOST}:1337/confirm?login=${login}&key=${key}`
     );
     return res;
   } catch (e) {

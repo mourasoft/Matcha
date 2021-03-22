@@ -13,9 +13,10 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import useForm from "../../Helpers/useForm";
 import validateSignIn from "../../Helpers/validationSignIn";
-import { useState ,useContext} from "react";
+import { useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
-import { AuthContext } from '../../context/authcontext';
+import { AuthContext } from "../../context/authcontext";
+import config from "../../config";
 
 // const theme = createMuiTheme({
 // 	palette: {
@@ -56,9 +57,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SignIn = () => {
-  const authContext = useContext(AuthContext);
+  const { setAuth } = useContext(AuthContext);
   const classes = useStyles();
-  const history = useHistory()
+  const history = useHistory();
   const [data, setData] = useState({
     login: "",
     passwd: "",
@@ -78,29 +79,32 @@ const SignIn = () => {
   function submit() {
     // console.log("clicked");
     // send api request to validat data and get token
-    axios.post("http://10.12.6.3:1337/users/signin", data).then((res) => {
-      if (res) {
-        console.log(res);
-        const { message, error, token, success } = res.data;
-        if (error === true) {
-          const error = message;
-          Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: error,
-          });
+    // console.log(`http://${config.SERVER_HOST}:1337/users/signin`);
+    axios
+      .post(`http://${config.SERVER_HOST}:1337/users/signin`, data)
+      .then((res) => {
+        if (res) {
+          const { message, error, token, success } = res.data;
+          if (error === true) {
+            const error = message;
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: error,
+            });
+          }
+          // no error put tokken in local storege and save in local   storege
+          else if (success === true) {
+            const login = data.login;
+            localStorage.setItem("token", token);
+            localStorage.setItem("login", login);
+            console.log(" >> Login is ", login);
+            console.log(" >> token  is ", token);
+            setAuth({ token, login });
+            history.replace("/");
+          }
         }
-        // no error put tokken in local storege and save in local   storege
-        else if (success === true) {
-          const login = data.login
-          localStorage.setItem("token", token);
-          localStorage.setItem("login",login)
-          authContext.setAuth({token,login})
-
-          history.replace("/")
-        }
-      }
-    });
+      });
   }
   return (
     <Container component="main" maxWidth="xs">

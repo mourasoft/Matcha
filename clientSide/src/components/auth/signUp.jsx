@@ -15,6 +15,7 @@ import validateSignUp from "../../Helpers/validationSignUp";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useHistory } from 'react-router-dom';
+import config from '../../config'
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -67,7 +68,7 @@ const SignUp = () => {
   );
 
   function submit() {
-    axios.post("http://10.12.6.3:1337/users/signup", data).then((res) => {
+    axios.post(`http://${config.SERVER_HOST}:1337/users/signup`, data).then((res) => {
       if (res) {
   
         if (res.data.error === true) {

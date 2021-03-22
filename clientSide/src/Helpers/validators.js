@@ -77,6 +77,24 @@ export function validateConfirm(confirm, pass, label) {
 }
 
 // birth day validator
-export function validateBirthday() {
-  return null;
+export function validateBirthday(birthday) {
+  const age = getAge(birthday)
+if(!birthday || birthday.trim()===""){
+  return "is required field."
 }
+  if (
+    birthday &&
+    !/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/.test(birthday)
+  ) {
+    return "Invalid date !";
+  } else if (age < 18) {
+    return "Come back when you're 18";
+  } else if (age > 120) {return "Invalid age !"};
+  return ""
+}
+  function getAge(birthday) {
+    const today = new Date();
+    const birthDate = new Date(birthday);
+    var age = today.getFullYear() - birthDate.getFullYear();
+    return age;
+  }

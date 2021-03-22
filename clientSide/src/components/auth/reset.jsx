@@ -14,6 +14,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import validateReset from "../../Helpers/validationReset";
 import { useHistory, useParams } from "react-router-dom";
+import config from "../../config";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -66,7 +67,7 @@ const Reset = () => {
     console.log(login, key);
     axios
       .post(
-        `http://10.12.6.3:1337/users/changepasswd?login=${login}&key=${key}`,
+        `http://${config.SERVER_HOST}:1337/users/changepasswd?login=${login}&key=${key}`,
         data
       )
       .then((res) => {

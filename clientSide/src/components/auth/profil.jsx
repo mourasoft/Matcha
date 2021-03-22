@@ -15,27 +15,16 @@ import {
   // Fab,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useContext } from "react";
 import CreatableSelect from "react-select/creatable";
-// import AddIcon from "@material-ui/icons/Add";
-import test from "../../images/1.png";
-import UpBtn from "../incl/upload";
-// const theme = createMuiTheme({
-// 	palette: {
-// 		primary: {
-// 			main: "#556cd6",
-// 		},
-// 		secondary: {
-// 			main: "#19857b",
-// 		},
-// 		error: {
-// 			main: "#38a2e3",
-// 		},
-// 		background: {
-// 			default: "#fff",
-// 		},
-// 	},
-// });
+import * as pubIP from "public-ip";
+import * as ipLocation from "iplocation";
+import config from "../../config";
+import AddIcon from "@material-ui/icons/Add";
+import useForm from "../../Helpers/useForm";
+import validateProfile from "../../Helpers/validationProfile";
+import { axios } from "axios";
+import { AuthContext } from "../../context/authcontext";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -62,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
   large: {
     width: theme.spacing(12),
     height: theme.spacing(12),
+    margin: "6px",
   },
   Profile: {
     flexBasis: "30%",
@@ -69,90 +59,131 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
   },
-  upload: {
-    display: "none",
-  },
-  buttonUpload: {
-    // display: "flex",
+  gallery: {
+    display: "flex",
+    justifyContent: "space-around",
+    ["@media (max-width:780px)"]: {
+      alignItems: "center",
+      flexWrap: "wrap",
+      justifyContent: "space-around",
+    },
   },
 }));
-const handleCreateOption = (v, a) => {
-  console.log(v);
-  console.log(a);
-};
-const Profile = () => {
-  const classes = useStyles();
-  const [uploadImg, setuploadImg] = useState([]);
-  // localisation Data
 
-  // const [location, setLocation] = useState({
-  //   lng: null,
-  //   lat: null,
-  // });
-  // form Data
+const Profile = () => {
+  const authcontext = useContext(AuthContext);
+  const classes = useStyles();
+  const [location, setLocation] = useState({
+    lat: null,
+    lon: null,
+  });
+
   const [data, setData] = useState({
     gender: "female",
     preferences: "male",
     biography: "",
     birthday: "",
     tags: [],
-    img: [],
-    location: { lng: "", lat: "" },
   });
-  const handlechange = (e) => {
-    const { name, value } = e.target;
-    setData({
-      ...data,
-      [name]: value,
-    });
-    // console.log("the name of value >>>>>", name, "the value is ", value);
-  };
-  // useEffect(() => {
-  //   console.log(navigator.geolocation);
-  //   console.log(data.gender);
-  // });
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // console.log({ ...data, ...location });
-  };
-  // function valudare(img)
-  // {
-  //   djdaajkdaddkd adhaddjjdahjad adjhadjkajadddkdhadhdahjadhad
-  // }
-  // function upload (img)
-  // {
-  //   axios.post('laccacacj/fajfhaj', dadyadyaddy, {image:img}).then(res)
-  //   {
-  //     if (res.data === "done")
-  //     {
-  //       adhadjkadad {
 
-  //       }
-  //       let val = {
-  //         image : img;
-  //       }
-  //       setduadu(uploadImg.concat(val))
-  //     }
-  //     else if (res.data === "no valid")
-  //     {
-  //       swal.fire()
-  //     }
-  //   }
-  // }
-  useEffect(() => {
-    // Update the document title using the browser API
-    setuploadImg([
-      {
-        image: test,
-      },
-    ]);
+  const [formErrors, setFormErrors] = useState({
+    birthday: "",
+    bio: "",
+  });
+
+  // position from navigateur
+  const showPosition = useCallback(async (pos) => {
+    const { lat, lon } = location;
+    setLocation({ lat, lon });
   }, []);
-  const handleUpdat = (e) => {
-    console.log(e);
+//  position from ipV4
+  const getLocation = useCallback(async (err) => {
+    if (err.code) {
+      try {
+        const publicLoction = await pubIP.v4();
+        const { lat, lon } = await ipLocation(publicLoction);
+        // console.log(latitude, longitude, country);
+        setLocation({ lat, lon });
+        console.log("ip", location);
+      } catch (err) {}
+    }
+  }, []);
+  async function getResponse({ lat, lon }, to) {
+    try {
+      const res = axios.get(
+        `http://${config.SERVER_HOST}:1337/position`,
+        {
+          lat,
+          lon,
+        },
+        {
+          headers: {
+            Authorization: to,
+          },
+        }
+      );
+      return res;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  // to send localisation
+  useEffect(() => {
+   
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(showPosition, getLocation);
+      // console.log(location);
+      // send data to api
+    }console.log("localisation in useeffect",authcontext.auth.token);
+      const position = async () => {
+        const { position } = await getResponse(location, );
+        console.log();
+    
+    }
+  }, []);
+
+  //  useForm hook
+  const { handleChange, values, handleSubmit, errors } = useForm(
+    submit,
+    validateProfile,
+    data,
+    setData,
+    formErrors,
+    setFormErrors
+  );
+
+  // upload picture profile
+
+  const [img, setImg] = useState({
+    img: "",
+    img1: "",
+    img2: "",
+    img3: "",
+    img4: "",
+  });
+
+  const photoUpload = (e) => {
+    const name = e.target.name;
+    e.preventDefault();
+    const reader = new FileReader();
+    const file = e.target.files[0];
+    // console.log(e.target.files[0]);
+    reader.onload = () => {
+      setImg({
+        ...img,
+        [name]: reader.result,
+      });
+      // console.log(img);
+      // console.log(img);
+    };
+    reader.readAsDataURL(file);
+    // console.log(img);
   };
-  const handlProfileUpdate = (e) => {
-    console.log(e);
-  };
+  function submit() {
+    // console.log(values);
+    // console.log("im here bro");
+  }
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -163,8 +194,8 @@ const Profile = () => {
         </Typography>
         <form
           className={classes.form}
-          onSubmit={handleSubmit}
           autoComplete="off"
+          onSubmit={handleSubmit}
           noValidate
         >
           <Grid container spacing={2}>
@@ -177,7 +208,7 @@ const Profile = () => {
                 aria-label="gender"
                 name="gender"
                 value={data.gender}
-                onChange={handlechange}
+                onChange={handleChange}
               >
                 <FormControlLabel
                   value="female"
@@ -188,11 +219,6 @@ const Profile = () => {
                   value="male"
                   control={<Radio />}
                   label="Male"
-                />
-                <FormControlLabel
-                  value="bisexual"
-                  control={<Radio />}
-                  label="Bisexual"
                 />
               </RadioGroup>
             </Grid>
@@ -205,7 +231,7 @@ const Profile = () => {
                 aria-label="gender"
                 name="preferences"
                 value={data.preferences}
-                onChange={handlechange}
+                onChange={handleChange}
               >
                 <FormControlLabel
                   value="female"
@@ -236,7 +262,9 @@ const Profile = () => {
                 type="text"
                 id="Biography"
                 value={data.biography}
-                onChange={handlechange}
+                onChange={handleChange}
+                error={errors.bio ? true : false}
+                helperText={errors.bio && errors.bio}
               />
             </Grid>
             <Grid item xs={12}>
@@ -261,10 +289,12 @@ const Profile = () => {
                 name="birthday"
                 type="date"
                 value={data.birthday}
-                onChange={handlechange}
+                onChange={handleChange}
                 InputLabelProps={{
                   shrink: true,
                 }}
+                error={errors.birthday ? true : false}
+                helperText={errors.birthday && errors.birthday}
               />
             </Grid>
             <Grid item xs={12}>
@@ -275,7 +305,7 @@ const Profile = () => {
                 <CreatableSelect
                   isClearable
                   isMulti
-                  onChange={handleCreateOption}
+                  // onChange={}
                 />
                 <FormHelperText error id="my-helper-text">
                   We'll never share your email.
@@ -286,38 +316,101 @@ const Profile = () => {
               <FormLabel required component="legend">
                 profile Picture
               </FormLabel>
-              <UpBtn />
-              <p>tach</p>
-              {/* <div className={classes.Profile}>
-                {uploadImg?.map((i, index) => (
-                  <div key={index}>
-                    <Avatar
-                      alt="Remy Sharp"
-                      src={i.image}
-                      className={classes.large}
-                      onClick={handlProfileUpdate}
-                    />
-                  </div>
-                ))}
-              </div> */}
-              <FormHelperText error id="my-helper-text">
-                required
-              </FormHelperText>
+              <div className={classes.Profile}>
+                <label for="avatar-image-upload">
+                  <Avatar
+                    // alt="Remy Sharp"
+                    src={img.img}
+                    style={{ cursor: "pointer" }}
+                    className={classes.large}
+                    // onClick={handlProfileUpdate}
+                  />
+                </label>
+                <input
+                  name="img"
+                  accept="image/*"
+                  hidden
+                  id="avatar-image-upload"
+                  type="file"
+                  onChange={photoUpload}
+                />
+              </div>
             </FormControl>
-            <FormControl className={classes.buttonUpload}>
-              <input
-                accept="image/*"
-                className={classes.upload}
-                id="contained-button-file"
-                multiple
-                type="file"
-              />
-              <label htmlFor="contained-button-file">
-                <Button variant="contained" color="primary" component="span">
-                  Upload
-                </Button>
+            <Grid item xs={12} className={classes.gallery}>
+              {/* <div> */}
+              <label for="img1">
+                <Avatar
+                  src={img.img1}
+                  variant="square"
+                  className={classes.large}
+                >
+                  <AddIcon />
+                </Avatar>
               </label>
-            </FormControl>
+              <input
+                name="img1"
+                accept="image/*"
+                hidden
+                id="img1"
+                type="file"
+                onChange={photoUpload}
+              />
+              <label for="img2">
+                <Avatar
+                  src={img.img2}
+                  variant="square"
+                  className={classes.large}
+                >
+                  <AddIcon />
+                </Avatar>
+              </label>
+              <input
+                name="img2"
+                accept="image/*"
+                hidden
+                id="img2"
+                type="file"
+                onChange={photoUpload}
+              />
+              {/* image3 */}
+              <label for="img3">
+                <Avatar
+                  src={img.img3}
+                  variant="square"
+                  className={classes.large}
+                >
+                  <AddIcon />
+                </Avatar>
+              </label>
+              <input
+                name="img3"
+                accept="image/*"
+                hidden
+                id="img3"
+                type="file"
+                onChange={photoUpload}
+              />
+              {/* image4 */}
+              <label for="img4">
+                <Avatar
+                  src={img.img4}
+                  variant="square"
+                  className={classes.large}
+                >
+                  <AddIcon />
+                </Avatar>
+              </label>
+              <input
+                name="img4"
+                accept="image/*"
+                hidden
+                id="img4"
+                type="file"
+                onChange={photoUpload}
+              />
+
+              {/* </div> */}
+            </Grid>
           </Grid>
           <Button
             type="submit"
