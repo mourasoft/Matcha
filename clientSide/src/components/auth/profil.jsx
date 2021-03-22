@@ -93,17 +93,18 @@ const Profile = () => {
 
   // position from navigateur
   const showPosition = useCallback(async (pos) => {
-    const { lat, lon } = location;
-    setLocation({ lat, lon });
+    const { latitude, longitude } = pos.coords;
+    setLocation({ lat: latitude, lon: longitude });
+    // console.log(lat,lon);
   }, []);
-//  position from ipV4
+  //  position from ipV4
   const getLocation = useCallback(async (err) => {
     if (err.code) {
       try {
         const publicLoction = await pubIP.v4();
-        const { lat, lon } = await ipLocation(publicLoction);
+        const { latitude, longitude } = await ipLocation(publicLoction);
         // console.log(latitude, longitude, country);
-        setLocation({ lat, lon });
+        setLocation({ lat:latitude, lon:longitude });
         console.log("ip", location);
       } catch (err) {}
     }
@@ -129,17 +130,16 @@ const Profile = () => {
   }
   // to send localisation
   useEffect(() => {
-   
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(showPosition, getLocation);
       // console.log(location);
       // send data to api
-    }console.log("localisation in useeffect",authcontext.auth.token);
-      const position = async () => {
-        const { position } = await getResponse(location, );
-        console.log();
-    
     }
+    console.log("localisation in useeffect", authcontext.auth.token);
+    const position = async () => {
+      const { position } = await getResponse(location, authcontext.auth.token);
+      console.log();
+    };
   }, []);
 
   //  useForm hook
@@ -186,6 +186,11 @@ const Profile = () => {
 
   return (
     <Container component="main" maxWidth="xs">
+      <div>
+        {location.lat}
+        {"   "}
+        {location.lon}
+      </div>
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}></Avatar>
