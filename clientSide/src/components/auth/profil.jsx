@@ -11,20 +11,22 @@ import {
   Radio,
   FormControlLabel,
   FormControl,
-  FormHelperText,
+
   // Fab,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useState, useEffect, useCallback, useContext } from "react";
-import CreatableSelect from "react-select/creatable";
 import * as pubIP from "public-ip";
 import * as ipLocation from "iplocation";
 import config from "../../config";
 import AddIcon from "@material-ui/icons/Add";
 import useForm from "../../Helpers/useForm";
 import validateProfile from "../../Helpers/validationProfile";
-import { axios } from "axios";
+import Axios from "axios";
 import { AuthContext } from "../../context/authcontext";
+import { Menu } from "../../Helpers/Tags";
+import Creatable from "react-select/creatable";
+import Swal from "sweetalert2";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -73,24 +75,28 @@ const useStyles = makeStyles((theme) => ({
 const Profile = () => {
   const authcontext = useContext(AuthContext);
   const classes = useStyles();
+  // set location
   const [location, setLocation] = useState({
     lat: null,
     lon: null,
   });
-
+  // set data
   const [data, setData] = useState({
-    gender: "female",
-    preferences: "male",
+    gender: "1",
+    preferences: "2",
     biography: "",
     birthday: "",
-    tags: [],
+    city: "Khouribga",
   });
-
+  // set errors
   const [formErrors, setFormErrors] = useState({
     birthday: "",
     bio: "",
   });
-
+  // setTag
+  const [tag, setTag] = useState([]);
+  // upload picture profile
+  const [img, setImg] = useState([]);
   // position from navigateur
   const showPosition = useCallback(async (pos) => {
     const { latitude, longitude } = pos.coords;
@@ -103,44 +109,16 @@ const Profile = () => {
       try {
         const publicLoction = await pubIP.v4();
         const { latitude, longitude } = await ipLocation(publicLoction);
-        // console.log(latitude, longitude, country);
-        setLocation({ lat:latitude, lon:longitude });
-        console.log("ip", location);
+        setLocation({ lat: latitude, lon: longitude });
       } catch (err) {}
     }
   }, []);
-  async function getResponse({ lat, lon }, to) {
-    try {
-      const res = axios.get(
-        `http://${config.SERVER_HOST}:1337/position`,
-        {
-          lat,
-          lon,
-        },
-        {
-          headers: {
-            Authorization: to,
-          },
-        }
-      );
-      return res;
-    } catch (e) {
-      console.log(e);
-    }
-  }
-  // to send localisation
+  // to set localisation
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(showPosition, getLocation);
-      // console.log(location);
-      // send data to api
     }
-    console.log("localisation in useeffect", authcontext.auth.token);
-    const position = async () => {
-      const { position } = await getResponse(location, authcontext.auth.token);
-      console.log();
-    };
-  }, []);
+  }, [showPosition, getLocation]);
 
   //  useForm hook
   const { handleChange, values, handleSubmit, errors } = useForm(
@@ -151,16 +129,6 @@ const Profile = () => {
     formErrors,
     setFormErrors
   );
-
-  // upload picture profile
-
-  const [img, setImg] = useState({
-    img: "",
-    img1: "",
-    img2: "",
-    img3: "",
-    img4: "",
-  });
 
   const photoUpload = (e) => {
     const name = e.target.name;
@@ -173,24 +141,111 @@ const Profile = () => {
         ...img,
         [name]: reader.result,
       });
-      // console.log(img);
-      // console.log(img);
     };
     reader.readAsDataURL(file);
-    // console.log(img);
   };
+
+  const handleChangeTag = (e, a) => {
+    setTag(e);
+    // setTag([...tag, e.value]);
+  };
+  let val = tag?.map((test) => {
+    if (
+      test.value.length > 1 &&
+      test.value.length < 20 &&
+      /^[a-zA-Z\s.0-9_-]+$/.test(test.value)
+    ) {
+      test = test.value;
+      return test;
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "tag Not valid",
+      });
+      return ""
+    }
+  });
+  // console.log(val);
+  const isValidNewOption = (inputValue, selectValue) =>
+    inputValue.length > 0 && selectValue.length < 5;
+
   function submit() {
-    // console.log(values);
-    // console.log("im here bro");
+    if (val.length < 1) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Choose a Tag ",
+      });
+    } else if (img.img === undefined) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Choose a Picture ",
+      });
+    } else {
+      const { token } = authcontext.auth;
+      const { gender, city, birthday, preferences, biography } = values;
+      const { lat, lon } = location;
+      let imgs = Object.values(img);
+      imgs.forEach((i) => {
+        Axios.post(
+          `http://${config.SERVER_HOST}:1337/images`,
+          { img: i },
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
+        ).then((res) => {
+          console.log(res);
+        });
+      });
+      Axios.post(
+        `http://${config.SERVER_HOST}:1337/infos`,
+        {
+          city,
+          birthday,
+          gendre: gender,
+          sexpref: preferences,
+          desc: biography,
+        },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      ).then((res) => {
+        // console.log(res);
+      });
+
+      Axios.post(
+        `http://${config.SERVER_HOST}:1337/tags`,
+        { tags: JSON.stringify(val) },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      ).then((res) => {
+        // console.log(res);
+      });
+      Axios.post(
+        `http://${config.SERVER_HOST}:1337/position`,
+        { lat, lon },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      ).then((res) => {});
+
+      // redirct it to home
+    }
   }
 
   return (
     <Container component="main" maxWidth="xs">
-      <div>
-        {location.lat}
-        {"   "}
-        {location.lon}
-      </div>
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}></Avatar>
@@ -216,15 +271,11 @@ const Profile = () => {
                 onChange={handleChange}
               >
                 <FormControlLabel
-                  value="female"
+                  value="1"
                   control={<Radio />}
                   label="Female"
                 />
-                <FormControlLabel
-                  value="male"
-                  control={<Radio />}
-                  label="Male"
-                />
+                <FormControlLabel value="2" control={<Radio />} label="Male" />
               </RadioGroup>
             </Grid>
             <Grid item xs={12}>
@@ -239,17 +290,13 @@ const Profile = () => {
                 onChange={handleChange}
               >
                 <FormControlLabel
-                  value="female"
+                  value="1"
                   control={<Radio />}
                   label="Female"
                 />
+                <FormControlLabel value="2" control={<Radio />} label="Male" />
                 <FormControlLabel
-                  value="male"
-                  control={<Radio />}
-                  label="Male"
-                />
-                <FormControlLabel
-                  value="bisexual"
+                  value="3"
                   control={<Radio />}
                   label="Bisexual"
                 />
@@ -273,18 +320,6 @@ const Profile = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              {/* <TextField
-                variant="outlined"
-                name="tags"
-                required
-                fullWidth
-                id="tags"
-                label="Tags"
-                type="text"
-                name="tags"
-              /> */}
-            </Grid>
-            <Grid item xs={12}>
               <TextField
                 id="date"
                 margin="normal"
@@ -303,47 +338,47 @@ const Profile = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <FormControl fullWidth>
-                <FormLabel required error component="legend">
-                  Tags
-                </FormLabel>
-                <CreatableSelect
-                  isClearable
-                  isMulti
-                  // onChange={}
-                />
-                <FormHelperText error id="my-helper-text">
-                  We'll never share your email.
-                </FormHelperText>
-              </FormControl>
+              {/* <FormControl fullWidth> */}
+              <FormLabel required component="legend">
+                Tags
+              </FormLabel>
+              <Creatable
+                components={{ Menu }}
+                isMulti
+                name="tags"
+                // onCreateOption={handleCreate}
+                isValidNewOption={isValidNewOption}
+                onChange={handleChangeTag}
+              />
             </Grid>
+
+            {/* Profile picture */}
             <FormControl fullWidth>
               <FormLabel required component="legend">
                 profile Picture
               </FormLabel>
               <div className={classes.Profile}>
-                <label for="avatar-image-upload">
+                <label htmlFor="img">
                   <Avatar
-                    // alt="Remy Sharp"
                     src={img.img}
                     style={{ cursor: "pointer" }}
                     className={classes.large}
-                    // onClick={handlProfileUpdate}
                   />
                 </label>
                 <input
                   name="img"
                   accept="image/*"
                   hidden
-                  id="avatar-image-upload"
+                  id="img"
                   type="file"
                   onChange={photoUpload}
                 />
               </div>
             </FormControl>
+            {/* all other picture */}
             <Grid item xs={12} className={classes.gallery}>
-              {/* <div> */}
-              <label for="img1">
+              {/* picture 1 */}
+              <label htmlFor="img1">
                 <Avatar
                   src={img.img1}
                   variant="square"
@@ -360,7 +395,7 @@ const Profile = () => {
                 type="file"
                 onChange={photoUpload}
               />
-              <label for="img2">
+              <label htmlFor="img2">
                 <Avatar
                   src={img.img2}
                   variant="square"
@@ -378,7 +413,7 @@ const Profile = () => {
                 onChange={photoUpload}
               />
               {/* image3 */}
-              <label for="img3">
+              <label htmlFor="img3">
                 <Avatar
                   src={img.img3}
                   variant="square"
@@ -396,7 +431,7 @@ const Profile = () => {
                 onChange={photoUpload}
               />
               {/* image4 */}
-              <label for="img4">
+              <label htmlFor="img4">
                 <Avatar
                   src={img.img4}
                   variant="square"
@@ -424,7 +459,7 @@ const Profile = () => {
             color="primary"
             className={classes.submit}
           >
-            Next
+            Valid
           </Button>
         </form>
       </div>

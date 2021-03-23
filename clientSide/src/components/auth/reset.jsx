@@ -59,7 +59,7 @@ const Reset = () => {
     if (login === undefined || key === undefined) {
       history.push("/signin");
     }
-  }, []);
+  }, [history]);
 
   const { login, key } = useParams();
 

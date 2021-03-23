@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
-import config from '../../config'
+import config from "../../config";
 
 async function getResponse(login, key) {
   try {
@@ -41,7 +41,7 @@ function Confirm() {
       }
     };
     data();
-  }, [login, key]);
+  }, [login, key, history]);
 
   return null;
 }

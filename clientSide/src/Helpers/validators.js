@@ -59,7 +59,7 @@ export function validatePassword(str, label) {
 export function validateText(str, label) {
   if (!str || str.trim() === "") {
     return `${label} is required field.`;
-  } else if (!/^[a-zA-Z\s.]+$/.test(str)) {
+  } else if (!/^[a-zA-Z\s.0-9]+$/.test(str)) {
     return `Use only Alpha numeric characters.`;
   } else if (str.length > 250) {
     return `${label} must be less than 250 characters.`;

@@ -1,8 +1,21 @@
 import { useContext } from "react";
 import { AuthContext, IsLoggedfn } from "../context/authcontext";
+import axios from "axios";
+import config from "../config";
+
 const Home = () => {
   const { auth } = useContext(AuthContext);
   const loged = IsLoggedfn();
+
+  axios
+    .get(`http://${config.SERVER_HOST}:1337/posts`, {
+      headers: {
+        Authorization: auth.token,
+      },
+    })
+    .then((res) => {
+      console.log(res);
+    });
   // console.log(auth);
   if (typeof loged === "undefined") {
     return <div> Yuo not logged :(</div>;

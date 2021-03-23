@@ -10,6 +10,7 @@ import Profile from "./components/auth/profil";
 import Confirm from "./components/auth/confirme";
 import { useContext } from "react";
 import { AuthProvider, AuthContext } from "./context/authcontext";
+import EditProfile from './pages/editProfile';
 
 function App() {
   const authContext = useContext(AuthContext);
@@ -20,6 +21,7 @@ function App() {
         <Route path="/signup" component={SignUp} />
         <Route path="/confirm/:login/:key" component={Confirm} />
         <Route path="/reset/:login/:key" exact component={Reset} />
+        <Route path="/editprofile" component={EditProfile}/>
         <Route path="/signin" component={SignIn} />
         <Route path="/profile" component={Profile} />
         <Route path="/forgot" component={Forgot} />
