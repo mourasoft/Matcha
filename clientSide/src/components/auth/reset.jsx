@@ -64,7 +64,7 @@ const Reset = () => {
   const { login, key } = useParams();
 
   function submit() {
-    console.log(login, key);
+    // console.log(login, key);
     axios
       .post(
         `http://${config.SERVER_HOST}:1337/users/changepasswd?login=${login}&key=${key}`,

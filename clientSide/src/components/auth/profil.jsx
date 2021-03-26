@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
   gallery: {
     display: "flex",
     justifyContent: "space-around",
-    ["@media (max-width:780px)"]: {
+    [theme.breakpoints.down(780)]: {
       alignItems: "center",
       flexWrap: "wrap",
       justifyContent: "space-around",
@@ -163,7 +163,7 @@ const Profile = () => {
         title: "Oops...",
         text: "tag Not valid",
       });
-      return ""
+      return "";
     }
   });
   // console.log(val);

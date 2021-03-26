@@ -8,8 +8,8 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useState } from "react";
-import EditPassword from "../components/editProfile/editPassword";
-import EditeProfile from "../components/editProfile/editProfile";
+import PasswordEdit from "../components/editProfile/passwordEdit";
+import ProfileEdite from "../components/editProfile/profilEdit";
 const useStyles = makeStyles((theme) => ({
 	paper: {
 		marginTop: theme.spacing(8),
@@ -87,8 +87,8 @@ const EditProfile = () => {
 						</Button>
 					</Grid>
 				</Grid>
-				{page === 1 && <EditeProfile />}
-				{page === 0 && <EditPassword />}
+				{page === 1 && <ProfileEdite />}
+				{page === 0 && <PasswordEdit />}
 			</div>
 		</Container>
 	);

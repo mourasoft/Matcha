@@ -10,7 +10,9 @@ import Profile from "./components/auth/profil";
 import Confirm from "./components/auth/confirme";
 import { useContext } from "react";
 import { AuthProvider, AuthContext } from "./context/authcontext";
-import EditProfile from './pages/editProfile';
+import EditProfile from "./pages/editProfile";
+import Notification from "./pages/notification";
+import ProfilePAdge from "./pages/post";
 
 function App() {
   const authContext = useContext(AuthContext);
@@ -19,9 +21,11 @@ function App() {
       <Navbar />
       <Switch>
         <Route path="/signup" component={SignUp} />
+        <Route path="/notif" component={Notification} />
+        <Route path="/post" component={ProfilePAdge} />
         <Route path="/confirm/:login/:key" component={Confirm} />
         <Route path="/reset/:login/:key" exact component={Reset} />
-        <Route path="/editprofile" component={EditProfile}/>
+        <Route path="/editprofile" component={EditProfile} />
         <Route path="/signin" component={SignIn} />
         <Route path="/profile" component={Profile} />
         <Route path="/forgot" component={Forgot} />
