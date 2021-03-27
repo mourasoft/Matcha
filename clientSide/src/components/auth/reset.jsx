@@ -59,6 +59,7 @@ const Reset = () => {
     if (login === undefined || key === undefined) {
       history.push("/signin");
     }
+    // eslint-disable-next-line
   }, [history]);
 
   const { login, key } = useParams();

@@ -11,7 +11,7 @@ import {
   FormControl,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import AddIcon from "@material-ui/icons/Add";
+// import AddIcon from "@material-ui/icons/Add";
 import { Menu } from "../../Helpers/Tags";
 import Creatable from "react-select/creatable";
 import useForm from "../../Helpers/useForm";
@@ -25,7 +25,8 @@ import { AuthContext } from "../../context/authcontext";
 import { useContext } from "react";
 import Swal from "sweetalert2";
 import DeleteIcon from "@material-ui/icons/Delete";
-import PublishIcon from "@material-ui/icons/Publish";
+// import PublishIcon from "@material-ui/icons/Publish";
+
 const ProfileEdite = () => {
   const classes = useStyles();
   const authContext = useContext(AuthContext);
@@ -192,7 +193,8 @@ const ProfileEdite = () => {
             text: "tag Not valid",
           });
           flag = false;
-          // return "";
+
+          return "";
         }
       });
       if (val.length < 1) {
@@ -209,7 +211,7 @@ const ProfileEdite = () => {
     }
   }
   const photoUpload = (e) => {
-    const name = e.target.name;
+    // const name = e.target.name;
     e.preventDefault();
     const reader = new FileReader();
     const file = e.target.files[0];
@@ -224,7 +226,7 @@ const ProfileEdite = () => {
     reader.readAsDataURL(file);
   };
   function deleteFn(imgName) {
-    let data = img.filter((image) => image != imgName);
+    let data = img.filter((image) => image !== imgName);
     setImg([...data]);
     axios
       .delete(`http://${config.SERVER_HOST}:1337/images`, {
@@ -398,6 +400,7 @@ const ProfileEdite = () => {
             {/* <FormLabel className={classes.labeltag} required component="legend">
               City
             </FormLabel> */}
+
             <Autocomplete
               id="city"
               // value={props.city[props.cityOwner]}

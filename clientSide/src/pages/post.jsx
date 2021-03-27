@@ -1,88 +1,102 @@
-import {
-  Container,
-  CssBaseline,
-  Typography,
-  Grid,
-  TextField,
-  Button,
-  Avatar,
-  Badge,
-  Card,
-  CardActionArea,
-  CardActions,
-  CardContent,
-  CardMedia,
-  Slider,
-} from "@material-ui/core";
+import { useState, useContext, useEffect } from "react";
+import Filter from "../components/home/filter";
+import CardProfile from "../components/home/card";
+import axios from "axios";
+import config from "../config";
+import { AuthContext } from "../context/authcontext";
+import { Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Rating from "@material-ui/lab/Rating";
-import ProfileIcon from "@material-ui/icons/PersonOutlineOutlined";
-import { useState } from "react";
-import Profile from "../components/auth/profil";
+
+function getInstance(token) {
+  return axios.create({
+    headers: { Authorization: `${token}` },
+  });
+}
 
 const ProfilePAdge = () => {
+  // const {
+  //   auth: { token,
+  // } = useContext(AuthContext);
+  const [age, setAge] = useState([0, 100]);
+  const [km, setKm] = useState([0, 12700]);
+  const [rating, setRating] = useState([0, 5]);
+  const [tag, setTag] = useState([0, 5]);
+  const [sorted, setSorted] = useState("1");
+  const [data, setData] = useState([]);
+  const [error, setError] = useState(false);
   const classes = useStyles();
-  const [value, setValue] = useState([20, 37]);
-  function valuetext(value) {
-    return `${value}°C`;
+  // console.log(authContex.auth.token);
+  function filterData() {
+    const token = localStorage.getItem("token");
+    if (token !== undefined) {
+      (async () => {
+        const { data } = await getInstance(token).get(
+          `http://${config.SERVER_HOST}:1337/posts?limit=${0}&minAge=${
+            age[0]
+          }&maxAge=${age[1]}&minLoc=${km[0]}&maxLoc=${km[1]}&minCtags=${
+            tag[0]
+          }&maxCtags=${tag[1]}&minFameRat=${rating[0]}&maxFameRat=${
+            rating[1]
+          }&sortType=${parseInt(sorted)}&intereststags=&searchString=`
+        );
+        if (data.success) {
+          setData(data.data);
+        }
+      })();
+    }
   }
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
+
+  console.log(data);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token !== undefined) {
+      (async () => {
+        const { data } = await getInstance(token).get(
+          `http://${config.SERVER_HOST}:1337/posts?limit=${0}&minAge=${
+            age[0]
+          }&maxAge=${age[1]}&minLoc=${km[0]}&maxLoc=${km[1]}&minCtags=${
+            tag[0]
+          }&maxCtags=${tag[1]}&minFameRat=${rating[0]}&maxFameRat=${
+            rating[1]
+          }&sortType=${parseInt(sorted)}&intereststags=&searchString=`
+        );
+        if (data.success) {
+          setData(data.data);
+        }
+      })();
+    }
+  }, []);
   return (
     <>
-      {value}
-      <Container className={classes.all} maxWidth="sl">
-        <span>Filter</span>
-        <div className={classes.root}>
-          <Typography id="range-slider" gutterBottom>
-            Temperature range
-          </Typography>
-          <Slider
-            value={value}
-            onChange={handleChange}
-            valueLabelDisplay="auto"
-            aria-labelledby="range-slider"
-            getAriaValueText={valuetext}
-          />
-        </div>
-      </Container>
-      <Container className={classes.all} maxWidth="sl">
-        <Card
-          onClick={(e) => {
-            console.log(e);
-          }}
-          className={classes.root}
-        >
-          <CardActionArea className={classes.card}>
-            <CardMedia
-              className={classes.media}
-              image="https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZmlsZXxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80"
-              title="Contemplative Reptile"
-            />
-            <CardContent className={classes.cardCont}>
-              <Typography gutterBottom variant="h5" component="h2">
-                FirstName and LastName
-              </Typography>
-              <Typography variant="h6" component="h2">
-                2540 KM
-              </Typography>
-              <Typography variant="h6" component="h2">
-                20 Age
-              </Typography>
-              <Typography variant="h6" component="h2">
-                khouribga
-              </Typography>
-              <Rating name="read-only" value={3} readOnly />
-            </CardContent>
-          </CardActionArea>
-          <CardActions className={classes.cardCont}>
-            <Button size="small" color="primary">
-              View Profile
-            </Button>
-          </CardActions>
-        </Card>
-      </Container>
+      {/* {typeof parseInt(sorted)} */}
+      <Filter
+        filterData={filterData}
+        age={age}
+        setAge={setAge}
+        km={km}
+        setKm={setKm}
+        setRating={setRating}
+        rating={rating}
+        tag={tag}
+        setTag={setTag}
+        sorted={sorted}
+        setSorted={setSorted}
+      />
+      {(() => {
+        if (data.length === 0)
+          return (
+            <span style={{ textAlign: "center", display: "block" }}>
+              no data to load! ...
+            </span>
+          );
+        return (
+          <Container className={classes.all} maxWidth="xl">
+            {data.map((el) => (
+              <CardProfile key={el.user_id} data={el} />
+            ))}
+          </Container>
+        );
+      })()}
     </>
   );
 };
@@ -90,21 +104,10 @@ const ProfilePAdge = () => {
 export default ProfilePAdge;
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    maxWidth: 320,
-    marginTop: theme.spacing(1),
-    marginLeft: theme.spacing(1),
-
-    [theme.breakpoints.down(480)]: {
-      // display: "flex",
-      marginTop: theme.spacing(2),
-      marginLeft: theme.spacing(0),
-      // alignItems: "center",
-    },
-  },
   all: {
+    width: "100%",
     marginTop: theme.spacing(2),
-    marginLeft: theme.spacing(2),
+    marginLeft: theme.spacing(0),
     padding: theme.spacing(2),
     display: "flex",
     flexWrap: "wrap",
@@ -116,41 +119,54 @@ const useStyles = makeStyles((theme) => ({
       marginLeft: theme.spacing(0),
       alignItems: "center",
     },
+    radio: {
+      flexDirection: "row",
+      justifyContent: "center",
+      // flexDirection: "row",
+    },
+    paper: {
+      marginTop: theme.spacing(8),
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+    },
 
     // alignItems: "center",
     // width: "320px",
     // border: "black solid ",
     // borderRadius: "50px",
     // backgroundColor: "gris",
-  },
-  // paper: {
-  //   marginTop: theme.spacing(4),
-  //   marginLeft: theme.spacing(4),
-  //   padding: theme.spacing(2),
-  //   display: "flex",
-  //   flexDirection: "column",
 
-  //   alignItems: "center",
-  //   width: "320px",
-  //   border: "black solid ",
-  //   borderRadius: "50px",
-  //   backgroundColor: "gris",
-  // },
-  media: {
-    height: 190,
-  },
-  // large: {
-  //   width: theme.spacing(10),
-  //   height: theme.spacing(10),
-  // },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.primary.main,
-  },
-  cardCont: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
+    // paper: {
+    //   marginTop: theme.spacing(4),
+    //   marginLeft: theme.spacing(4),
+    //   padding: theme.spacing(2),
+    //   display: "flex",
+    //   flexDirection: "column",
+
+    //   alignItems: "center",
+    //   width: "320px",
+    //   border: "black solid ",
+    //   borderRadius: "50px",
+    //   backgroundColor: "gris",
+    // },
+    media: {
+      width: 250,
+      height: 190,
+    },
+    // large: {
+    //   width: theme.spacing(10),
+    //   height: theme.spacing(10),
+    // },
+    avatar: {
+      margin: theme.spacing(1),
+      backgroundColor: theme.palette.primary.main,
+    },
+    cardCont: {
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+    },
   },
 }));
