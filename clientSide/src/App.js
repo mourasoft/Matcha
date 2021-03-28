@@ -13,6 +13,7 @@ import { AuthProvider, AuthContext } from "./context/authcontext";
 import EditProfile from "./pages/editProfile";
 import Notification from "./pages/notification";
 import ProfilePAdge from "./pages/post";
+import User from "./pages/user";
 
 function App() {
   const authContext = useContext(AuthContext);
@@ -23,6 +24,7 @@ function App() {
         <Route path="/signup" component={SignUp} />
         <Route path="/notif" component={Notification} />
         <Route path="/post" component={ProfilePAdge} />
+        <Route path="/user/:user" component={User} />
         <Route path="/confirm/:login/:key" component={Confirm} />
         <Route path="/reset/:login/:key" exact component={Reset} />
         <Route path="/editprofile" component={EditProfile} />

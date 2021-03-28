@@ -1,18 +1,18 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Filter from "../components/home/filter";
 import CardProfile from "../components/home/card";
 import axios from "axios";
 import config from "../config";
-import { AuthContext } from "../context/authcontext";
+// import { AuthContext } from "../context/authcontext";
 import { Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import useInfiniteScroll from "react-infinite-scroll-hook";
 
 function getInstance(token) {
   return axios.create({
     headers: { Authorization: `${token}` },
   });
 }
-
 const ProfilePAdge = () => {
   // const {
   //   auth: { token,
@@ -21,50 +21,109 @@ const ProfilePAdge = () => {
   const [km, setKm] = useState([0, 12700]);
   const [rating, setRating] = useState([0, 5]);
   const [tag, setTag] = useState([0, 5]);
-  const [sorted, setSorted] = useState("1");
+  const [sorted, setSorted] = useState("4");
   const [data, setData] = useState([]);
-  const [error, setError] = useState(false);
+  const [dataLength, setDataLength] = useState([]);
+  const [pages, setPages] = useState(0);
+  const [loading, setLoading] = useState(false);
   const classes = useStyles();
+  const [flag, setflag] = useState(0);
+
+  // console.log(typeof pages);
   // console.log(authContex.auth.token);
   function filterData() {
+    setflag(1);
     const token = localStorage.getItem("token");
     if (token !== undefined) {
+      setPages(0);
       (async () => {
-        const { data } = await getInstance(token).get(
-          `http://${config.SERVER_HOST}:1337/posts?limit=${0}&minAge=${
+        const { data: datas } = await getInstance(token).get(
+          `http://${config.SERVER_HOST}:1337/posts?limit=0&minAge=${
             age[0]
           }&maxAge=${age[1]}&minLoc=${km[0]}&maxLoc=${km[1]}&minCtags=${
             tag[0]
           }&maxCtags=${tag[1]}&minFameRat=${rating[0]}&maxFameRat=${
             rating[1]
-          }&sortType=${parseInt(sorted)}&intereststags=&searchString=`
+          }&sortType=${parseInt(sorted)}&intereststags=&flag=1`
         );
-        if (data.success) {
-          setData(data.data);
+        if (datas.success) {
+          setData(datas.data);
+          setDataLength(datas.length);
         }
+        setPages(20);
+        // setLoading(true);
       })();
     }
   }
+  // console.log(dataLength);
+  // console.log(data);
+  // console.log("pages", pages);
+  // console.log(data);
+  const scrollIt = useInfiniteScroll({
+    loading,
+    hasNextPage: true,
+    onLoadMore: LoadMore,
+    scrollContainer: "window",
+  });
 
-  console.log(data);
+  function LoadMore() {
+    setTimeout(() => {
+      if (pages >= dataLength) {
+        setLoading(false);
+      }
+
+      const token = localStorage.getItem("token");
+
+      setLoading(true);
+      console.log("anahna");
+      if (token !== undefined) {
+        (async () => {
+          // console.log("pages ==>", pages);
+          // console.log("eeeeeeeeeeeeeeerereerreereerererrereerreerereee", pages);
+          const { data: datas } = await getInstance(token).get(
+            `http://${config.SERVER_HOST}:1337/posts?limit=${pages}&minAge=${
+              age[0]
+            }&maxAge=${age[1]}&minLoc=${km[0]}&maxLoc=${km[1]}&minCtags=${
+              tag[0]
+            }&maxCtags=${tag[1]}&minFameRat=${rating[0]}&maxFameRat=${
+              rating[1]
+            }&sortType=${parseInt(
+              sorted
+            )}&intereststags=&searchString=&flag=${flag}`
+          );
+          if (datas.success) {
+            setData((old) => [...old, ...datas.data]);
+            console.log("Data lenght from upload", data.length);
+          }
+          setPages(pages + 20);
+          setLoading(false);
+        })();
+      }
+    }, 500);
+  }
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token !== undefined) {
       (async () => {
-        const { data } = await getInstance(token).get(
-          `http://${config.SERVER_HOST}:1337/posts?limit=${0}&minAge=${
+        const { data: datas } = await getInstance(token).get(
+          `http://${config.SERVER_HOST}:1337/posts?limit=${pages}&minAge=${
             age[0]
           }&maxAge=${age[1]}&minLoc=${km[0]}&maxLoc=${km[1]}&minCtags=${
             tag[0]
           }&maxCtags=${tag[1]}&minFameRat=${rating[0]}&maxFameRat=${
             rating[1]
-          }&sortType=${parseInt(sorted)}&intereststags=&searchString=`
+          }&sortType=${parseInt(
+            sorted
+          )}&intereststags=&searchString=&flag=${flag}`
         );
-        if (data.success) {
-          setData(data.data);
+        if (datas.success) {
+          setData(datas.data);
+          setDataLength(datas.length);
         }
+        setPages(20);
       })();
     }
+    // eslint-disable-next-line
   }, []);
   return (
     <>
@@ -81,6 +140,7 @@ const ProfilePAdge = () => {
         setTag={setTag}
         sorted={sorted}
         setSorted={setSorted}
+        setPages={setPages}
       />
       {(() => {
         if (data.length === 0)
@@ -90,9 +150,9 @@ const ProfilePAdge = () => {
             </span>
           );
         return (
-          <Container className={classes.all} maxWidth="xl">
-            {data.map((el) => (
-              <CardProfile key={el.user_id} data={el} />
+          <Container className={classes.all} maxWidth="xl" ref={scrollIt}>
+            {data.map((el, index) => (
+              <CardProfile key={index} data={el} />
             ))}
           </Container>
         );
@@ -107,7 +167,6 @@ const useStyles = makeStyles((theme) => ({
   all: {
     width: "100%",
     marginTop: theme.spacing(2),
-    marginLeft: theme.spacing(0),
     padding: theme.spacing(2),
     display: "flex",
     flexWrap: "wrap",

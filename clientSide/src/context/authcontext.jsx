@@ -3,30 +3,35 @@ import { useHistory } from "react-router-dom";
 import axios from "axios";
 import config from "../config";
 
+function getInstance(token) {
+  return axios.create({
+    headers: { Authorization: `${token}` },
+  });
+}
+
 export const AuthContext = createContext();
+
+const token = localStorage.getItem("token");
+const login = localStorage.getItem("login");
 
 export function AuthProvider(props) {
   const [auth, setAuth] = useState({});
   // const history = useHistory();
-
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const login = localStorage.getItem("login");
-    // console.log(token);
+    console.log("TOKEN FROM CONTEXT >> ", token);
+    console.log("LOGIN FROM CONTEXT >> ", login);
     if (token) {
       const isValid = async () => {
-        const { data } = await axios.get(
-          `http://${config.SERVER_HOST}:1337/auth`,
-          {
-            headers: {
-              Authorization: token,
-            },
-          }
+        const { data } = await getInstance(token).get(
+          `http://${config.SERVER_HOST}:1337/auth`
         );
-        // console.log(data);
         if (data.success) {
-          // console.log("data is valid");
-          setAuth({ token, login });
+          console.log("data is set in auth");
+          setAuth((oldVlas) => ({
+            ...oldVlas,
+            token,
+            login,
+          }));
         } else {
           // console.log("rani sekrana");
           localStorage.clear();
@@ -41,7 +46,7 @@ export function AuthProvider(props) {
       setAuth((oldValue) => {
         return { ...oldValue, token: null };
       });
-      localStorage.clear();
+      // localStorage.clear();
     }
   }, []);
 

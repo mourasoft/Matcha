@@ -1,0 +1,39 @@
+.userProfile {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.btnClick {
+  display: flex;
+}
+.information {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 20px;
+  width: 100%;
+}
+.info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+.gallery {
+  width: 200px;
+  height: 200px;
+  margin: 20px;
+}
+.galleryInfo {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  align-items: center;
+}
+
+@media only screen and (max-width: 768px) {
+  .galleryInfo {
+    flex-direction: column;
+  }
+}

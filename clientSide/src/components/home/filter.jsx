@@ -8,6 +8,7 @@ import {
   FormControlLabel,
   Button,
 } from "@material-ui/core";
+import "../../css/filter.css";
 const Filter = ({
   age,
   km,
@@ -20,10 +21,14 @@ const Filter = ({
   setTag,
   setSorted,
   filterData,
+  setPages,
 }) => {
+  // function pages() {
+  //   setPages(0);
+  // }
   return (
     <Container style={{ marginTop: "10px" }} maxWidth="md">
-      <div>
+      <div className="filter">
         <FormLabel component="legend">Filter:</FormLabel>
         <div
           style={{
@@ -122,6 +127,8 @@ const Filter = ({
           color="primary"
           style={{ outlined: "center" }}
           onClick={() => {
+            console.log("filter Clicked");
+            // pages();
             filterData();
           }}
         >

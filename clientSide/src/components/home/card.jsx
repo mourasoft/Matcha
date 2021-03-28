@@ -1,5 +1,4 @@
 import {
-  Container,
   Typography,
   Button,
   //   Avatar,
@@ -18,8 +17,10 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import Rating from "@material-ui/lab/Rating";
 import config from "../../config";
+import { useHistory } from "react-router-dom";
 const CardProfile = (props) => {
   const classes = useStyles();
+  const history = useHistory();
   const { awaykm, age, image, fameRat, infos } = props.data;
   //   console.log(args);
   return (
@@ -58,7 +59,13 @@ const CardProfile = (props) => {
         </CardContent>
       </CardActionArea>
       <CardActions className={classes.cardCont}>
-        <Button size="small" color="primary">
+        <Button
+          onClick={() => {
+            history.push(`/user/${infos[0].login}`);
+          }}
+          size="small"
+          color="primary"
+        >
           View Profile
         </Button>
       </CardActions>
@@ -70,16 +77,18 @@ export default CardProfile;
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    maxWidth: "100%",
+    flexBasis: "15%",
     margin: "1%",
     // marginTop: theme.spacing(1),
     // marginLeft: theme.spacing(1),
-
-    [theme.breakpoints.down(480)]: {
-      // display: "flex",
-      //   marginTop: theme.spacing(2),
-      //   marginLeft: theme.spacing(0),
-      // alignItems: "center",
+    [theme.breakpoints.down(1030)]: {
+      flexBasis: "30%",
+    },
+    [theme.breakpoints.down(768)]: {
+      display: "flex",
+      flexDirection: "column",
+      flexBasis: "100%",
+      margin: "20px",
     },
   },
   all: {
