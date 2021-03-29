@@ -5,7 +5,7 @@ import { Dropdown } from "./dropDown";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext, IsLoggedfn } from "../../context/authcontext";
-import { Logout } from './logoutbtn';
+import { Logout } from "./logoutbtn";
 
 export const Navbar = () => {
   const { auth } = useContext(AuthContext);
@@ -30,22 +30,32 @@ export const Navbar = () => {
     }
   };
 
-  if(typeof loged === 'string'){
-	return (<>
-		<nav className="navbar">
-		  <Link to="/" className="navbar-logo">
-			Matcha
-		  </Link>
-		  <div className="menu-icon" onClick={handleClick}>
-			<i className={click ? "fas fa-times" : "fas fa-bars"} />
-		  </div>
-		  <ul className={click ? "nav-menu active" : "nav-menu"}>
-			<li className="nav-item">
-			  <Link to="/" className="nav-links" onClick={closeMobileMenu}>
-				Home
-			  </Link>
-			</li>
-			{/* <li
+  if (typeof loged === "string") {
+    return (
+      <>
+        <nav className="navbar">
+          <Link to="/" className="navbar-logo">
+            Matcha
+          </Link>
+          <div className="menu-icon" onClick={handleClick}>
+            <i className={click ? "fas fa-times" : "fas fa-bars"} />
+          </div>
+          <ul className={click ? "nav-menu active" : "nav-menu"}>
+            <li className="nav-item">
+              <Link to="/" className="nav-links" onClick={closeMobileMenu}>
+                Home
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link
+                to="/profile"
+                className="nav-links"
+                onClick={closeMobileMenu}
+              >
+                profile
+              </Link>
+            </li>
+            {/* <li
 			  className="nav-item"
 			  onMouseEnter={onMouseEnter}
 			  onMouseLeave={onMouseLeave}
@@ -60,7 +70,7 @@ export const Navbar = () => {
 				About
 			  </Link>
 			</li> */}
-			{/* <li>
+            {/* <li>
 			  <Link
 				to="/signup"
 				className="nav-links-mobile"
@@ -69,7 +79,7 @@ export const Navbar = () => {
 				Sign up
 			  </Link>
 			</li> */}
-			{/* <li>
+            {/* <li>
 			  <Link
 				to="/signin"
 				className="nav-links-mobile"
@@ -78,28 +88,28 @@ export const Navbar = () => {
 				Sign in
 			  </Link>
 			</li> */}
-		  </ul>
-		  <Logout />
-		</nav>
-	  </>
-	)
-  }else{
-	return (
-		<>
-		  <nav className="navbar">
-			<Link to="/" className="navbar-logo">
-			  Matcha
-			</Link>
-			<div className="menu-icon" onClick={handleClick}>
-			  <i className={click ? "fas fa-times" : "fas fa-bars"} />
-			</div>
-			<ul className={click ? "nav-menu active" : "nav-menu"}>
-			  <li className="nav-item">
-				<Link to="/" className="nav-links" onClick={closeMobileMenu}>
-				  Home
-				</Link>
-			  </li>
-			  {/* <li
+          </ul>
+          <Logout />
+        </nav>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <nav className="navbar">
+          <Link to="/" className="navbar-logo">
+            Matcha
+          </Link>
+          <div className="menu-icon" onClick={handleClick}>
+            <i className={click ? "fas fa-times" : "fas fa-bars"} />
+          </div>
+          <ul className={click ? "nav-menu active" : "nav-menu"}>
+            <li className="nav-item">
+              <Link to="/" className="nav-links" onClick={closeMobileMenu}>
+                Home
+              </Link>
+            </li>
+            {/* <li
 				className="nav-item"
 				onMouseEnter={onMouseEnter}
 				onMouseLeave={onMouseLeave}
@@ -114,7 +124,7 @@ export const Navbar = () => {
 				  About
 				</Link>
 			  </li> */}
-			  {/* <li>
+            {/* <li>
 				<Link
 				  to="/signup"
 				  className="nav-links-mobile"
@@ -123,19 +133,19 @@ export const Navbar = () => {
 				  Sign up
 				</Link>
 			  </li> */}
-			  <li>
-				<Link
-				  to="/signin"
-				  className="nav-links-mobile"
-				  onClick={closeMobileMenu}
-				>
-				  Sign in
-				</Link>
-			  </li>
-			</ul>
-			<Button />
-		  </nav>
-		</>
-	  );
+            <li>
+              <Link
+                to="/signin"
+                className="nav-links-mobile"
+                onClick={closeMobileMenu}
+              >
+                Sign in
+              </Link>
+            </li>
+          </ul>
+          <Button />
+        </nav>
+      </>
+    );
   }
 };

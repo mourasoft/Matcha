@@ -3,7 +3,6 @@ import Filter from "../components/home/filter";
 import CardProfile from "../components/home/card";
 import axios from "axios";
 import config from "../config";
-// import { AuthContext } from "../context/authcontext";
 import { Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useInfiniteScroll from "react-infinite-scroll-hook";
@@ -14,9 +13,6 @@ function getInstance(token) {
   });
 }
 const ProfilePAdge = () => {
-  // const {
-  //   auth: { token,
-  // } = useContext(AuthContext);
   const [age, setAge] = useState([0, 100]);
   const [km, setKm] = useState([0, 12700]);
   const [rating, setRating] = useState([0, 5]);
@@ -29,8 +25,6 @@ const ProfilePAdge = () => {
   const classes = useStyles();
   const [flag, setflag] = useState(0);
 
-  // console.log(typeof pages);
-  // console.log(authContex.auth.token);
   function filterData() {
     setflag(1);
     const token = localStorage.getItem("token");
@@ -51,14 +45,10 @@ const ProfilePAdge = () => {
           setDataLength(datas.length);
         }
         setPages(20);
-        // setLoading(true);
       })();
     }
   }
-  // console.log(dataLength);
-  // console.log(data);
-  // console.log("pages", pages);
-  // console.log(data);
+
   const scrollIt = useInfiniteScroll({
     loading,
     hasNextPage: true,
@@ -78,8 +68,6 @@ const ProfilePAdge = () => {
       console.log("anahna");
       if (token !== undefined) {
         (async () => {
-          // console.log("pages ==>", pages);
-          // console.log("eeeeeeeeeeeeeeerereerreereerererrereerreerereee", pages);
           const { data: datas } = await getInstance(token).get(
             `http://${config.SERVER_HOST}:1337/posts?limit=${pages}&minAge=${
               age[0]
@@ -127,7 +115,6 @@ const ProfilePAdge = () => {
   }, []);
   return (
     <>
-      {/* {typeof parseInt(sorted)} */}
       <Filter
         filterData={filterData}
         age={age}

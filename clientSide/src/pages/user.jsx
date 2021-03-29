@@ -32,12 +32,12 @@ const User = () => {
   const classes = useStyles();
   const { user } = useParams();
   const history = useHistory();
-  console.log(user);
+
   const authContext = useContext(AuthContext);
   const {
     auth: { token, login: userlogin },
   } = authContext;
-  //   console.log(authContext.auth);
+  const [report, setReport] = useState({ report: "" });
   const [data, setData] = useState({
     fname: "",
     lname: "",
@@ -53,25 +53,62 @@ const User = () => {
   const [tag, setTag] = useState("");
   const [info, setInfo] = useState([]);
   const [image, setImage] = useState([]);
+  const [like, setLike] = useState(false);
+  function reportUser() {
+    if (token && user) {
+      axios
+        .post(
+          `http://${config.SERVER_HOST}:1337/report`,
+          { login: user },
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+          if (res.data.success) {
+            setReport((old) => ({
+              ...old,
+              report: report.report === "Reported" ? "Unreported" : "Reported",
+            }));
+            // changeError({
+            //   type: "success",
+            //   msg: result.data.message,
+            //   state: true,
+            // });
+          } else if (res.data.error) {
+            //   changeError({
+            //     type: "error",
+            //     msg: result.data.message,
+            //     state: true,
+            //   });
+          }
+        });
+    }
+  }
 
   function blockUser() {
-    axios
-      .post(
-        `http://${config.SERVER_HOST}:1337/blocks`,
-        { login: user },
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      )
-      .then((result) => {
-        console.log(result);
-        if (result.data.success) {
-          history.replace("/post");
-        } else if (result.data.error) {
-        }
-      });
+    if ((token, user)) {
+      axios
+        .post(
+          `http://${config.SERVER_HOST}:1337/blocks`,
+          { login: user },
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
+        )
+        .then((result) => {
+          console.log(result);
+          if (result.data.success) {
+            history.replace("/post");
+          } else if (result.data.error) {
+          }
+        });
+    }
   }
 
   useEffect(() => {
@@ -83,7 +120,6 @@ const User = () => {
           },
         })
         .then((res) => {
-          console.log(res);
           if (res.data.error) {
             Swal.fire({
               icon: "error",
@@ -159,9 +195,77 @@ const User = () => {
             setImage(res.data.data);
           }
         });
+      axios
+        .get(`http://${config.SERVER_HOST}:1337/report?login=${user}`, {
+          headers: {
+            Authorization: token,
+          },
+        })
+        .then((res) => {
+          if (res.data.success) {
+            setReport((old) => ({
+              ...old,
+              report: res.data.ureport ? "Reported" : "Unreported",
+            }));
+          }
+        });
+      /*
+       *userRating
+       */
+      axios
+        .get(`http://${config.SERVER_HOST}:1337/rating?login=${user}`, {
+          headers: {
+            Authorization: token,
+          },
+        })
+        .then((res) => {
+          // console.log(res);
+          // setuserRating(result.data.totalrat);
+          // setRating(result.data.userrat);
+        });
+      axios
+        .get(`http://${config.SERVER_HOST}:1337/follow?to_login=${user}`, {
+          headers: {
+            Authorization: token,
+          },
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.data.success) {
+            setLike(res.data.data);
+          }
+          // console.log(res);
+          // setuserRating(result.data.totalrat);
+          // setRating(result.data.userrat);
+        });
     }
-    // eslint-disable-next-line
+    // eslint-disable-next-lineres.
   }, [token]);
+  // console.log(report);
+  function insetLike() {
+    if ((token, user)) {
+      axios
+        .post(
+          `http://${config.SERVER_HOST}:1337/follow`,
+          {
+            to_login: user,
+          },
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
+        )
+        .then((result) => {
+          console.log(result);
+          if (result.data.message === "Follow added successfully") {
+            setLike(true);
+          } else if (result.data.message === "Follow deleted successfully") {
+            setLike(false);
+          }
+        });
+    }
+  }
   //   console.log(image[0].image_path);
   const { city, gender, preferences, biography } = data;
   const { login, fname, lname } = info;
@@ -181,18 +285,34 @@ const User = () => {
       <h2>{login && login}</h2>
       {userlogin !== login?.toLowerCase() ? (
         <div className="btnClick">
-          <Button className={classes.btn} variant="outlined" color="primary">
+          <Button
+            className={classes.btn}
+            variant="outlined"
+            color={like ? "secondary" : "primary"}
+            onClick={() => {
+              insetLike();
+            }}
+          >
             <Follow />
           </Button>
           <Button className={classes.btn} variant="outlined" color="primary">
             <Block
               onClick={() => {
-                blockUser(token, user, history);
+                blockUser();
               }}
             />
           </Button>
-          <Button className={classes.btn} variant="outlined" color="primary">
-            <Report />
+          <Button
+            disabled={report.report === "Reported" ? true : false}
+            className={classes.btn}
+            variant="outlined"
+            color="primary"
+          >
+            <Report
+              onClick={() => {
+                reportUser();
+              }}
+            />
           </Button>
         </div>
       ) : null}

@@ -8,7 +8,7 @@ const Home = () => {
   const loged = IsLoggedfn();
 
   axios
-    .get(`http://${config.SERVER_HOST}:1337/infos?login=mouras`, {
+    .get(`http://${config.SERVER_HOST}:1337/posts`, {
       headers: {
         Authorization: auth.token,
       },

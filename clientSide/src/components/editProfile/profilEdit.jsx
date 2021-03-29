@@ -26,8 +26,10 @@ import { useContext } from "react";
 import Swal from "sweetalert2";
 import DeleteIcon from "@material-ui/icons/Delete";
 // import PublishIcon from "@material-ui/icons/Publish";
+import { useHistory } from "react-router-dom";
 
 const ProfileEdite = () => {
+  const history = useHistory();
   const classes = useStyles();
   const authContext = useContext(AuthContext);
   const [tag, setTag] = useState({
@@ -55,7 +57,6 @@ const ProfileEdite = () => {
     birthday: "",
   });
   useEffect(() => {
-    // console.log(authContext.auth.login);
     if (
       typeof authContext.auth.token === "string" &&
       typeof authContext.auth.login === "string"
@@ -70,7 +71,6 @@ const ProfileEdite = () => {
           }
         )
         .then((res) => {
-          // console.log(res.data.data[0]);
           if (res.data.success) {
             const { birthday, city, desc, sex_pref, gendre } = res.data.data[0];
             setData((old) => ({
@@ -80,7 +80,7 @@ const ProfileEdite = () => {
               biography: desc,
               gender: gendre === "female" ? "1" : "2",
               preferences:
-                sex_pref === "female" ? "1" : sex_pref === "male" ? "2" : "1",
+                sex_pref === "female" ? "1" : sex_pref === "male" ? "2" : "3",
             }));
           }
         });
@@ -94,7 +94,6 @@ const ProfileEdite = () => {
           }
         )
         .then((res) => {
-          // console.log(res);
           if (res.data.success) {
             const { email, first_name, last_name, login } = res.data.data[0];
             setData((old) => ({
@@ -118,7 +117,7 @@ const ProfileEdite = () => {
         .then((res) => {
           let active = [];
           let inactive = [];
-          res.data.data.filter((e) => {
+          res.data.data?.filter((e) => {
             if (e.state === "active") {
               active.push({ label: e.tag, value: e.tag });
               return "";
@@ -143,9 +142,8 @@ const ProfileEdite = () => {
           }
         )
         .then((res) => {
-          // console.log(res);
           if (res.data.success) {
-            console.log(res.data.data);
+            // console.log(res.data.data);
             let Imgs = [];
             res.data.data.forEach((e) => {
               Imgs.push(e.image_path);
@@ -154,13 +152,11 @@ const ProfileEdite = () => {
           }
         });
     }
-    // axios.getclg
   }, [authContext.auth.token, authContext.auth.login]);
   const handleChangeTag = (e, a) => {
     setTag((old) => ({ ...old, act: e }));
   };
-  // console.log(val);
-  //  console.log("value",val);
+  // useFrom to validdate data
   const { handleChange, values, handleSubmit, errors } = useForm(
     submit,
     validatProfileEdit,
@@ -169,16 +165,27 @@ const ProfileEdite = () => {
     formErrors,
     setFormErrors
   );
+  // city limit of show item
   const filterOptions = createFilterOptions({
     limit: 10,
   });
-  // console.log("test", tag.act);
   function submit() {
-    // console.log("2342343");
-    let flag = true;
+    const {
+      city,
+      birthday,
+      gender,
+      biography,
+      preferences,
+      fname,
+      lname,
+      login,
+      email,
+    } = values;
+    // console.log(typeof preferences);
+    let hasError = false;
+
     if (tag.act) {
-      // console.log(tag.act);
-      let val = tag.act?.map((test, iKey) => {
+      var val = tag.act?.map((test, iKey) => {
         if (
           test?.value?.length > 1 &&
           test?.value?.length < 20 &&
@@ -192,32 +199,134 @@ const ProfileEdite = () => {
             title: "Oops...",
             text: "tag Not valid",
           });
-          flag = false;
-
           return "";
         }
       });
-      if (val.length < 1) {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Choose a Tag ",
-        });
-      }
     }
 
-    if (flag) {
-      // axios calls
+    if (val.length < 1) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Choose a Tag ",
+      });
+      hasError = true;
+    } else if (img.length === 0) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Select a image",
+      });
+      hasError = true;
+    }
+    // console.log("fname", fname);
+    if (hasError) return;
+    else {
+      // console.log("something happend");
+      // console.log(">> :: ", lname);
+
+      /**
+       * send tags
+       */
+      try {
+        axios.post(
+          `http://${config.SERVER_HOST}:1337/tags`,
+          { tags: JSON.stringify(val) },
+          {
+            headers: {
+              Authorization: authContext.auth.login,
+            },
+          }
+        );
+      } catch (e) {}
+
+      try {
+        const clearedImgs = img.filter((el) => el.indexOf("data:", 0) === 0);
+        // console.log(clearedImgs);
+        clearedImgs?.forEach((el) => {
+          axios
+            .post(
+              `http://${config.SERVER_HOST}:1337/images`,
+              { img: el },
+              {
+                headers: {
+                  Authorization: authContext.auth.token,
+                },
+              }
+            )
+            .then((res) => {
+              //backend response
+            });
+        });
+      } catch (e) {}
+
+      try {
+        axios
+          .patch(
+            `http://${config.SERVER_HOST}:1337/infos`,
+            {
+              city,
+              birthday,
+              gendre: gender,
+              sexpref: preferences,
+              desc: biography,
+            },
+            {
+              headers: {
+                Authorization: authContext.auth.token,
+              },
+            }
+          )
+          .then((res) => {
+            // backend respose
+            // console.log(res);
+          });
+      } catch (e) {}
+
+      try {
+        axios
+          .patch(
+            `http://${config.SERVER_HOST}:1337/users`,
+            { first_name: fname, last_name: lname, email, login },
+            {
+              headers: {
+                Authorization: authContext.auth.token,
+              },
+            }
+          )
+          .then(({ data }) => {
+            if (data.success) {
+              // refresh
+              // free context && local
+              // swal fire suc "message"
+
+              authContext.setAuth({});
+              localStorage.clear();
+              history.replace("/");
+              Swal.fire({
+                icon: "success",
+                title: "OK",
+                text: data.message,
+              });
+            } else if (data.success === false) {
+              Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: data.message,
+              });
+            } else {
+              // success message
+            }
+          });
+      } catch (e) {}
     }
   }
+
   const photoUpload = (e) => {
-    // const name = e.target.name;
     e.preventDefault();
     const reader = new FileReader();
     const file = e.target.files[0];
-    // console.log(e.target.files[0]);
     reader.onload = () => {
-      // const img = new Image();
       setImg((oldImgs) => {
         if (oldImgs.length === 5) return oldImgs;
         return [...oldImgs, reader.result];
@@ -238,11 +347,10 @@ const ProfileEdite = () => {
         },
       })
       .then((res) => {
-        console.log(res);
+        // console.log(res);
       });
   }
-
-  // console.log("image", img);
+  // console.log(img);
   return (
     <>
       <form
@@ -432,10 +540,6 @@ const ProfileEdite = () => {
             <div className={classes.Profile}>
               <label htmlFor="img">
                 <Avatar
-                  // src={
-                  //   img.toAdd[0] &&
-                  //   `http://${config.SERVER_HOST}:1337${config.SERVER_IMGS}${img.toAdd[0]}`
-                  // }
                   style={{ cursor: "pointer" }}
                   className={classes.large}
                 />
@@ -471,18 +575,8 @@ const ProfileEdite = () => {
                     className={classes.large}
                   ></Avatar>
                 </label>
-                {/* <input
-                  name={index}
-                  accept="image/*"
-                  hidden
-                  id={index}
-                  type="file"
-                  onChange={photoUpload}
-                /> */}
               </div>
             ))}
-            {/* </div>; */}
-            {/* </div> */}
           </Grid>
         </Grid>
         <Button
@@ -498,7 +592,6 @@ const ProfileEdite = () => {
     </>
   );
 };
-// console.log(list);
 export default ProfileEdite;
 
 const useStyles = makeStyles((theme) => ({

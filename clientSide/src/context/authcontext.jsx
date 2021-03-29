@@ -18,8 +18,6 @@ export function AuthProvider(props) {
   const [auth, setAuth] = useState({});
   // const history = useHistory();
   useEffect(() => {
-    console.log("TOKEN FROM CONTEXT >> ", token);
-    console.log("LOGIN FROM CONTEXT >> ", login);
     if (token) {
       const isValid = async () => {
         const { data } = await getInstance(token).get(

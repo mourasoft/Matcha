@@ -1,0 +1,227 @@
+.chat
+{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background: #f6f6f6;
+    border-radius: 12px;
+    height: 900px;
+}
+.center-chat
+{
+    width: 90%;
+    margin: 60px auto;
+    overflow: hidden;
+    display: flex;
+}
+.messages
+{
+    flex-basis: 25%;
+    background: #EEEEF6;
+    border-radius: 12px;
+    height: 100%;
+}
+.messages .title
+{
+    display: flex;
+    flex-direction: row;
+    margin-left: 12px;
+}
+
+.conversation
+{
+    min-width: 75%;
+    height: 90%;
+}
+.conversation h3
+{
+    margin-left: 12px;
+}
+.username{
+    color: black;
+}
+.conver
+{
+    height: 83%;
+    overflow: auto;
+    margin: 20px 0 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-self: flex-end;
+}
+.conversation div:nth-child(3)
+{
+    display: flex;
+    flex-direction: row;
+}
+.te{
+    display: flex;
+    flex-direction: column;
+    height: 100% !important;
+}
+.users_chat
+{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    cursor: pointer;
+    margin: 30px 0 20px 0;
+}
+.personal
+{
+    overflow: auto;
+    height: 780px;
+    scrollbar-color: yellow blue;
+}
+.profile_img
+{
+    flex-basis: 90%;
+    display: flex;
+    flex-direction: row;
+    margin-left: 10px;
+    height: 80px;
+}
+.lastmg
+{
+    color: #909090;
+}
+.profile_img img
+{
+    width: 40px;
+    height: 40px;
+    border-radius: 90%;
+}
+.chatprofileImg{
+    width: 40px;
+    height: 40px;
+    border-radius: 90%;
+    margin-left: 10px;
+}
+.chatDiv{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.profile_img div
+{
+    display: flex;
+    flex-direction: column;
+    margin: 0 0 0 15px;
+}
+.profile_img div h4
+{
+    margin: 0;
+}
+.profile_img h3 {
+    font-size: medium;
+    margin-right: 30px;
+}
+.backbutton{
+    display: none !important ;
+}
+.profile_img p
+{
+    font-size: small;
+    margin : 0;
+    display:inline-block;
+
+}
+.chat h4
+{
+    margin-left: 12px;
+}
+.me
+{
+    max-width: 40%;
+    align-self: flex-end;
+    word-wrap: break-word;
+    background-color: #B4B6CB;
+    margin-right: 10px ;
+    border-radius: 12px;
+    margin: 10px;
+
+}
+.you
+{
+    width: 50%;
+    display: flex;
+    flex-direction: row;
+    margin-left: 10px;
+    align-items: center;
+    margin: 10px;
+}
+.you img
+{
+    width: 40px;
+    height: 40px;
+    border-radius: 90%;
+}
+.you p 
+{
+    color: #FFFF;
+    margin: 15px;
+}
+.you div
+{
+    max-width: 80%;
+    word-wrap: break-word;
+    margin-left: 10px ;
+    background-color: #13145C;
+    border-radius: 12px;
+}
+.me p
+{
+
+    margin: 15px;
+}
+.lastseen
+{
+    display: flex !important;
+    flex-direction : row !important;
+    justify-content: space-around;
+    align-items: center;
+    margin: 0 !important;
+}
+@media only screen and (max-width : 1154px)
+{
+    .profile_img{
+        height: 100%;
+    }
+    .messages{
+        min-width: 35%;
+    }
+    .conversation
+    {
+        min-width: 65%;
+    }
+}
+@media only screen and (max-width : 768px)
+{
+    .conversation
+    {
+        min-width: 100%;
+    }
+    .messages{
+        flex-basis:  100%;
+    }
+    .chat
+    {
+        margin: auto;
+        width: 100%;
+    }
+    .backbutton{
+        display: inline !important;
+    }
+    .me div p {
+        word-break: break-word;
+    }
+    .active{
+        display: inline;
+    }
+    .inactive{
+        display: none;
+    }
+}

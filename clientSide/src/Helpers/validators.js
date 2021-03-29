@@ -20,7 +20,7 @@ export function validateUser(str, label) {
     return `${label} is required field.`;
   } else if (!/^\w+$/.test(str)) {
     return `${label} is not valid.`;
-  } else if (str.length < 3) {
+  } else if (str.length < 5) {
     return `${label} must be at least 4 characters.`;
   } else if (str.length > 12) {
     return `${label} must be less than 13 characters.`;
@@ -78,10 +78,10 @@ export function validateConfirm(confirm, pass, label) {
 
 // birth day validator
 export function validateBirthday(birthday) {
-  const age = getAge(birthday)
-if(!birthday || birthday.trim()===""){
-  return "is required field."
-}
+  const age = getAge(birthday);
+  if (!birthday || birthday.trim() === "") {
+    return "is required field.";
+  }
   if (
     birthday &&
     !/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/.test(birthday)
@@ -89,12 +89,14 @@ if(!birthday || birthday.trim()===""){
     return "Invalid date !";
   } else if (age < 18) {
     return "Come back when you're 18";
-  } else if (age > 120) {return "Invalid age !"};
-  return ""
-}
-  function getAge(birthday) {
-    const today = new Date();
-    const birthDate = new Date(birthday);
-    var age = today.getFullYear() - birthDate.getFullYear();
-    return age;
+  } else if (age > 120) {
+    return "Invalid age !";
   }
+  return "";
+}
+function getAge(birthday) {
+  const today = new Date();
+  const birthDate = new Date(birthday);
+  var age = today.getFullYear() - birthDate.getFullYear();
+  return age;
+}
