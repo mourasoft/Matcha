@@ -8,7 +8,7 @@ import Reset from "./components/auth/reset";
 import Footer from "./components/incl/footer";
 import Profile from "./components/auth/profil";
 import Confirm from "./components/auth/confirme";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AuthProvider, AuthContext } from "./context/authcontext";
 import EditProfile from "./pages/editProfile";
 import Notification from "./pages/notification";
@@ -20,11 +20,55 @@ import config from "./config";
 import { useHistory } from "react-router-dom";
 import Chat from "./pages/chat";
 import Histrory from "./pages/history";
-
+import io from 'socket.io-client';
+import { useScrollTrigger } from "@material-ui/core";
+ 
 function App() {
   const history = useHistory();
+  const [ntfslength, setntfslength] = useState(0);
   const authContext = useContext(AuthContext);
-  console.log(authContext.auth.login);
+
+  function configSocket() {
+  const socket = io.connect(`http://${config.SERVER_HOST}:1337`);
+  socket.on('connect', (sock) => {
+    socket.emit('Authorization', authContext.auth.token);
+    socket.on('updatelengthntfs', (rien) => {
+      upntfslength();
+    });
+    // socket.on('updatentfs', () => {
+    //   console.log("heheheehe");
+    // })
+  })
+  }
+
+  function upntfslength() {
+    axios
+        .get(`http://${config.SERVER_HOST}:1337/notifications?limit=0`, {
+          headers: {
+            Authorization: localStorage.getItem('token'),
+          },
+        })
+        .then((res) => {
+          if (res.data.success) {
+            setntfslength(res.data.invue_length);
+          }
+        });
+  }
+
+  function vuentfs() {
+    axios
+        .get(`http://${config.SERVER_HOST}:1337/notifications/vue`, {
+          headers: {
+            Authorization: localStorage.getItem('token'),
+          },
+        })
+        .then((res) => {
+          if (res.data.success) {
+            setntfslength(0);
+          }
+        });
+  }
+  // socket.on('message', msg => );
 
   function isloged() {
     if (authContext.auth.login !== undefined && authContext.auth.login)
@@ -35,8 +79,10 @@ function App() {
     if (authContext.auth.iscomplet) return true;
     else return false;
   }
+  console.log(completProfile())
   useEffect(() => {
     // socketon();
+    configSocket();
     if (authContext.auth.token) {
       axios
         .get(`http://${config.SERVER_HOST}:1337/posts`, {
@@ -63,7 +109,7 @@ function App() {
 
   return (
     <>
-      <Navbar />
+      <Navbar ntfslength={ntfslength} upntfslength={upntfslength} vuentfs={vuentfs}/>
       <Switch>
         <Route
           path="/confirm/:login/:key"
@@ -83,22 +129,23 @@ function App() {
         />
         <Route
           path="/history"
-          component={!completProfile() ? Profile : isloged() ? History : Home}
+          component={Histrory}
+      
         />
         <Route
           path="/unblock"
-          component={!completProfile() ? Profile : isloged() ? unblock : Home}
+          component={unblock}
         />
         <Route
           path="/post"
           component={
-            !completProfile() ? Profile : isloged() ? ProfilePAdge : Home
+            ProfilePAdge
           }
         />
         <Route
           path="/editprofile"
           component={
-            !completProfile() ? Profile : isloged() ? EditProfile : Home
+           EditProfile
           }
         />
         <Route

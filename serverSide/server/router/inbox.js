@@ -6,7 +6,7 @@ const Authtoken = require('../jsonwt/authtoken.js');
 
 router.get('/users', require('../database/connection').connect, Authtoken.authenticatetoken, inboxmw.usersinbox, inboxcntr.usersinbox);
 
-// user_id, authorization
+// user_id, authorization, g_msgid (optional)
 router.get('/messages', require('../database/connection').connect, Authtoken.authenticatetoken, inboxmw.getMessages, inboxcntr.getMessages);
 
 // msg, login, authorization

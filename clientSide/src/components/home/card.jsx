@@ -18,16 +18,33 @@ import { makeStyles } from "@material-ui/core/styles";
 import Rating from "@material-ui/lab/Rating";
 import config from "../../config";
 import { useHistory } from "react-router-dom";
+import axios from "axios";
+import { useContext } from "react";
+import { AuthContext } from "../../context/authcontext";
+import io from 'socket.io-client';
+const socket = io.connect(`http://${config.SERVER_HOST}:1337`);
+
 const CardProfile = (props) => {
   const classes = useStyles();
+  const authContext = useContext(AuthContext)
   const history = useHistory();
   const { awaykm, age, image, fameRat, infos } = props.data;
-  //   console.log(args);
+
+  let notify = (loginTo) => {
+    socket.emit('updatentfs', '');
+    axios.post(`http://${config.SERVER_HOST}:1337/history/visit`,{login:loginTo},{
+      headers: {
+        Authorization: authContext.auth.token,
+      },
+    }).then((res)=> {
+    console.log(res.data)
+  });
+  }
+    // console.log(args);
   return (
     <Card
-      onClick={(e) => {
-        console.log(e);
-      }}
+    
+
       className={classes.root}
     >
       <CardActionArea className={classes.card}>
@@ -61,6 +78,7 @@ const CardProfile = (props) => {
       <CardActions className={classes.cardCont}>
         <Button
           onClick={() => {
+            notify(infos[0].login);
             history.push(`/user/${infos[0].login}`);
           }}
           size="small"

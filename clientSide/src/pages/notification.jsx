@@ -11,19 +11,34 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
-
 import { useEffect, useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { AuthContext } from "../context/authcontext";
 import config from "../config";
+import Moment from "react-moment";
+import io from 'socket.io-client';
+
 const Notification = () => {
   const classes = useStyles();
   const {
     auth: { token, login },
   } = useContext(AuthContext);
+  const [ntfslist, setntfslist] = useState([]);
+  const [limit, setlimit] = useState(0);
+
+  function configSocket() {
+    const socket = io.connect(`http://${config.SERVER_HOST}:1337`);
+    socket.on('connect', (sock) => {
+      socket.on('updatentfs', (mm) => {
+        console.log("update ntfs");
+        realTimeAdd();
+      })
+    })
+  }
 
   useEffect(() => {
     if (token) {
+      configSocket();
       axios
         .get(`http://${config.SERVER_HOST}:1337/notifications?limit=0`, {
           headers: {
@@ -31,48 +46,42 @@ const Notification = () => {
           },
         })
         .then((res) => {
-          console.log(res);
-          //   if (result.data.success) {
-          //     setntfslength(result.data.length);
-          //     changeIformation(() => {
-          //       const arr = information;
-          //       setallnotification(result.data.data.length);
-          //       for (let i = 0; i < result.data.data.length; i++)
-          //         arr.push({
-          //           firstname: result.data.data[i].first_name,
-          //           lastname: result.data.data[i].last_name,
-          //           login: result.data.data[i].login,
-          //           message: result.data.data[i].message,
-          //           date: timeSince(new Date(result.data.data[i].creat_dat)),
-          //           image:
-          //             result.data.data[i].img !== undefined
-          //               ? "http://" +
-          //                 config.SERVER_HOST +
-          //                 ":" +
-          //                 config.SERVER_PORT +
-          //                 config.SERVER_IMGS +
-          //                 result.data.data[i].img
-          //               : userprofil,
-          //           nts_id: result.data.data[i].nts_id,
-          //         });
-          //       return arr;
-          //     });
-          //   }
+          if (res.data.success) {
+            setntfslist(res.data.data);
+            setlimit(res.data.length);
+          }
         });
     }
     // eslint-disable-next-line
-  }, [token]);
+  }, [token]);realTimeAdd
+
+  function realTimeAdd() {
+    if (token) {
+      axios
+        .get(`http://${config.SERVER_HOST}:1337/notifications?g_ntsid=`
+        + ((ntfslist[0] != undefined) ? ntfslist[0].nts_id : 0), {
+          headers: {
+            Authorization: token,
+          },
+        })
+        .then((res) => {
+          if (res.data.success) {
+            let data = res.data.data.concat(ntfslist);
+            setntfslist(data);
+          }
+        });
+    }
+  }
+
   return (
     <div>
-      <NotifComp />
-      <NotifComp />
-      <NotifComp />
+    {ntfslist.map(e =>(<NotifComp e={e}/>))}
     </div>
   );
 };
 export default Notification;
 
-const NotifComp = () => {
+const NotifComp = ({e}) => {
   const classes = useStyles();
   return (
     <Container
@@ -91,7 +100,7 @@ const NotifComp = () => {
         </Grid>
         <Grid item xs={6}>
           <span>
-            has delet you from her page ok jhjhsd jhjhjhs jhj asdjh adsd j
+            {e.message}
           </span>
         </Grid>
         <Grid item xs={2}>
@@ -129,3 +138,6 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(2, 0, 2),
   },
 }));
+
+
+

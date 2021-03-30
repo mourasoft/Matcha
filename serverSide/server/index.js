@@ -90,14 +90,15 @@ socketio.on("connection", (socket) => {
     }
   });
 
-  socket.on("upntfs", (msg) => {
-    socket.broadcast.emit("upntfs", "");
-    socket.broadcast.emit("upAll", "");
+  socket.on("updatentfs", (msg) => {
+    socket.broadcast.emit("updatentfs", "");
+    socket.broadcast.emit("updatelengthntfs", "");
+
   });
 
-  socket.on("msg", (msg) => {
-    socket.broadcast.emit("updateMsg", "");
-  });
+  // socket.on("msg", (msg) => {
+  //   socket.broadcast.emit("updateMsg", "");
+  // });
 
   socket.on("disconnect", async (kk) => {
     if (socket.user_id) {

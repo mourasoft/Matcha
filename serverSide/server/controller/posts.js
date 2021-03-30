@@ -114,8 +114,7 @@ let sendposition = async (userid) => {
 };
 
 let filterbysexpref = (sexpref, flag) => {
-  console.log(sexpref);
-  if (sexpref != "both") {
+  if (sexpref != "both" && !flag) {
     return "AND `users_infos`.`gendre` LIKE '" + sexpref + "' ";
   }
   return "";

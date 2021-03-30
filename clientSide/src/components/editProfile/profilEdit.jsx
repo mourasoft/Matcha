@@ -72,7 +72,12 @@ const ProfileEdite = () => {
         )
         .then((res) => {
           if (res.data.success) {
-            const { birthday, city, desc, sex_pref, gendre } = res.data.data[0];
+            let { birthday, city, desc, sex_pref, gendre } = res.data.data[0];
+            if (/[0-9]{4}\/[0-9]{2}\/[0-9]{2}/.test(birthday)) {
+              let split = birthday.split('/');
+              birthday = `${split[1]}/${split[2]}/${split[0]}`;
+              console.log(birthday);
+            }
             setData((old) => ({
               ...old,
               birthday: birthday,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./navBar.css";
 import { Button } from "./button";
 import { Dropdown } from "./dropDown";
@@ -7,7 +7,7 @@ import { useContext } from "react";
 import { AuthContext, IsLoggedfn } from "../../context/authcontext";
 import { Logout } from "./logoutbtn";
 
-export const Navbar = () => {
+export const Navbar = ({ntfslength, upntfslength, vuentfs}) => {
   const { auth } = useContext(AuthContext);
   const loged = IsLoggedfn();
   const [click, setClick] = useState(false);
@@ -22,6 +22,9 @@ export const Navbar = () => {
     }
   };
 
+  useEffect(() => {
+    upntfslength();
+  }, []);
   const onMouseLeave = () => {
     if (window.innerWidth < 960) {
       setDropdown(false);
@@ -53,6 +56,18 @@ export const Navbar = () => {
                 onClick={closeMobileMenu}
               >
                 profile
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link
+                to="/notif"
+                className="nav-links"
+                onClick={() => {
+                  vuentfs();
+                  closeMobileMenu();
+                }}
+              >
+                notif{'/'+ ntfslength}
               </Link>
             </li>
             {/* <li

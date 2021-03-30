@@ -12,6 +12,8 @@ import { AuthContext } from "../context/authcontext";
 import axios from "axios";
 import config from "../config";
 import Swal from "sweetalert2";
+import io from 'socket.io-client';
+const socket = io.connect(`http://${config.SERVER_HOST}:1337`);
 
 const useStyles = makeStyles((theme) => ({
   avatar: {
@@ -261,6 +263,9 @@ const User = () => {
             setLike(false);
           }
         });
+        setTimeout(() => {
+          socket.emit('updatentfs', '');
+        }, 500);
     }
   }
   //   console.log(image[0].image_path);
