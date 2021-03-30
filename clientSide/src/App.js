@@ -20,53 +20,53 @@ import config from "./config";
 import { useHistory } from "react-router-dom";
 import Chat from "./pages/chat";
 import Histrory from "./pages/history";
-import io from 'socket.io-client';
+import io from "socket.io-client";
 import { useScrollTrigger } from "@material-ui/core";
- 
+
 function App() {
   const history = useHistory();
   const [ntfslength, setntfslength] = useState(0);
   const authContext = useContext(AuthContext);
 
   function configSocket() {
-  const socket = io.connect(`http://${config.SERVER_HOST}:1337`);
-  socket.on('connect', (sock) => {
-    socket.emit('Authorization', authContext.auth.token);
-    socket.on('updatelengthntfs', (rien) => {
-      upntfslength();
+    const socket = io.connect(`http://${config.SERVER_HOST}:1337`);
+    socket.on("connect", (sock) => {
+      socket.emit("Authorization", authContext.auth.token);
+      socket.on("updatelengthntfs", (rien) => {
+        upntfslength();
+      });
+      // socket.on('updatentfs', () => {
+      //   console.log("heheheehe");
+      // })
     });
-    // socket.on('updatentfs', () => {
-    //   console.log("heheheehe");
-    // })
-  })
   }
 
   function upntfslength() {
     axios
-        .get(`http://${config.SERVER_HOST}:1337/notifications?limit=0`, {
-          headers: {
-            Authorization: localStorage.getItem('token'),
-          },
-        })
-        .then((res) => {
-          if (res.data.success) {
-            setntfslength(res.data.invue_length);
-          }
-        });
+      .get(`http://${config.SERVER_HOST}:1337/notifications?limit=0`, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      })
+      .then((res) => {
+        if (res.data.success) {
+          setntfslength(res.data.invue_length);
+        }
+      });
   }
 
   function vuentfs() {
     axios
-        .get(`http://${config.SERVER_HOST}:1337/notifications/vue`, {
-          headers: {
-            Authorization: localStorage.getItem('token'),
-          },
-        })
-        .then((res) => {
-          if (res.data.success) {
-            setntfslength(0);
-          }
-        });
+      .get(`http://${config.SERVER_HOST}:1337/notifications/vue`, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      })
+      .then((res) => {
+        if (res.data.success) {
+          setntfslength(0);
+        }
+      });
   }
   // socket.on('message', msg => );
 
@@ -79,11 +79,11 @@ function App() {
     if (authContext.auth.iscomplet) return true;
     else return false;
   }
-  console.log(completProfile())
+  console.log(completProfile());
   useEffect(() => {
     // socketon();
-    configSocket();
     if (authContext.auth.token) {
+      configSocket();
       axios
         .get(`http://${config.SERVER_HOST}:1337/posts`, {
           headers: {
@@ -109,7 +109,11 @@ function App() {
 
   return (
     <>
-      <Navbar ntfslength={ntfslength} upntfslength={upntfslength} vuentfs={vuentfs}/>
+      <Navbar
+        ntfslength={ntfslength}
+        upntfslength={upntfslength}
+        vuentfs={vuentfs}
+      />
       <Switch>
         <Route
           path="/confirm/:login/:key"
@@ -127,35 +131,15 @@ function App() {
             !completProfile() ? Profile : isloged() ? Notification : Home
           }
         />
-        <Route
-          path="/history"
-          component={Histrory}
-      
-        />
-        <Route
-          path="/unblock"
-          component={unblock}
-        />
-        <Route
-          path="/post"
-          component={
-            ProfilePAdge
-          }
-        />
-        <Route
-          path="/editprofile"
-          component={
-           EditProfile
-          }
-        />
+        <Route path="/history" component={Histrory} />
+        <Route path="/unblock" component={unblock} />
+        <Route path="/post" component={ProfilePAdge} />
+        <Route path="/editprofile" component={EditProfile} />
         <Route
           path="/profile"
           component={isloged() && !completProfile() ? Profile : Home}
         />
-        <Route
-          path="/chat"
-          component={!completProfile() ? Profile : isloged() ? Chat : Home}
-        />
+        <Route path="/chat" component={Chat} />
         <Route path="/signin" component={isloged() ? Home : SignIn} />
         <Route path="/forgot" component={isloged() ? Home : Forgot} />
         <Route path="/signup" component={isloged() ? Home : SignUp} />
