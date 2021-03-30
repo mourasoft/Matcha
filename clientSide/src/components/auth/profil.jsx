@@ -27,6 +27,7 @@ import { AuthContext } from "../../context/authcontext";
 import { Menu } from "../../Helpers/Tags";
 import Creatable from "react-select/creatable";
 import Swal from "sweetalert2";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -80,13 +81,14 @@ const Profile = () => {
     lat: null,
     lon: null,
   });
+  const history = useHistory();
   // set data
   const [data, setData] = useState({
     gender: "1",
     preferences: "2",
     biography: "",
     birthday: "",
-    city: "Khouribga",
+    city: "",
   });
   // set errors
   const [formErrors, setFormErrors] = useState({
@@ -197,9 +199,7 @@ const Profile = () => {
               Authorization: token,
             },
           }
-        ).then((res) => {
-          console.log(res);
-        });
+        ).then((res) => {});
       });
       Axios.post(
         `http://${config.SERVER_HOST}:1337/infos`,
@@ -240,7 +240,7 @@ const Profile = () => {
         }
       ).then((res) => {});
 
-      // redirct it to home
+      history.replace("/");
     }
   }
 

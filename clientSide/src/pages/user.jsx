@@ -234,9 +234,6 @@ const User = () => {
           if (res.data.success) {
             setLike(res.data.data);
           }
-          // console.log(res);
-          // setuserRating(result.data.totalrat);
-          // setRating(result.data.userrat);
         });
     }
     // eslint-disable-next-lineres.

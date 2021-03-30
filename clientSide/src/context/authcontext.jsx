@@ -31,7 +31,6 @@ export function AuthProvider(props) {
             login,
           }));
         } else {
-          // console.log("rani sekrana");
           localStorage.clear();
           setAuth((oldValue) => {
             return { ...oldValue, token: null };

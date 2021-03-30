@@ -75,16 +75,40 @@ function App() {
           component={isloged() ? Home : Reset}
         />
         <Route path="/user/:user" component={isloged() ? User : Home} />
-        <Route path="/notif" component={isloged() ? Notification : Home} />
-        <Route path="/history" component={isloged() ? History : Home} />
-        <Route path="/unblock" component={isloged() ? unblock : Home} />
-        <Route path="/post" component={isloged() ? ProfilePAdge : Home} />
-        <Route path="/editprofile" component={isloged() ? EditProfile : Home} />
+        <Route
+          path="/notif"
+          component={
+            !completProfile() ? Profile : isloged() ? Notification : Home
+          }
+        />
+        <Route
+          path="/history"
+          component={!completProfile() ? Profile : isloged() ? History : Home}
+        />
+        <Route
+          path="/unblock"
+          component={!completProfile() ? Profile : isloged() ? unblock : Home}
+        />
+        <Route
+          path="/post"
+          component={
+            !completProfile() ? Profile : isloged() ? ProfilePAdge : Home
+          }
+        />
+        <Route
+          path="/editprofile"
+          component={
+            !completProfile() ? Profile : isloged() ? EditProfile : Home
+          }
+        />
         <Route
           path="/profile"
           component={isloged() && !completProfile() ? Profile : Home}
         />
-        <Route path="/chat" component={isloged() ? Chat : Home} />
+        <Route
+          path="/chat"
+          component={!completProfile() ? Profile : isloged() ? Chat : Home}
+        />
         <Route path="/signin" component={isloged() ? Home : SignIn} />
         <Route path="/forgot" component={isloged() ? Home : Forgot} />
         <Route path="/signup" component={isloged() ? Home : SignUp} />
