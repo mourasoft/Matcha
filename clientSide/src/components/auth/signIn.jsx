@@ -98,8 +98,6 @@ const SignIn = () => {
             const login = data.login;
             localStorage.setItem("token", token);
             localStorage.setItem("login", login);
-            console.log(" >> Login is ", login);
-            console.log(" >> token  is ", token);
             setAuth({ token, login });
             history.replace("/");
           }

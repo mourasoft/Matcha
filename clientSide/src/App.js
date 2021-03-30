@@ -24,56 +24,71 @@ import Histrory from "./pages/history";
 function App() {
   const history = useHistory();
   const authContext = useContext(AuthContext);
+  console.log(authContext.auth.login);
 
-  // useEffect(() => {
-  //   // socketon();
-  //   if (authContext.auth.token) {
-  //     axios
-  //       .get(`http://${config.SERVER_HOST}:1337/posts`, {
-  //         headers: {
-  //           Authorization: authContext.auth.token,
-  //         },
-  //       })
-  //       .then((result) => {
-  //         if (
-  //           result.data.message ===
-  //           "You've to complete your infos before visiting this page"
-  //         ) {
-  //           history.replace("/profile");
-  //           authContext.setAuth((old) => {
-  //             return { ...old, iscomplet: false };
-  //           });
-  //         }
-  //       });
-  //   }
-  // }, [authContext.auth.token, history]);
-  // console.log(authContext.auth);
-  function RedirectLogin() {
-    history.replace("/signin");
-    return null;
+  function isloged() {
+    if (authContext.auth.login !== undefined && authContext.auth.login)
+      return true;
+    else return false;
   }
-  function RedirectHome() {
-    history.replace("/");
-    return null;
+  function completProfile() {
+    if (authContext.auth.iscomplet) return true;
+    else return false;
   }
+  useEffect(() => {
+    // socketon();
+    if (authContext.auth.token) {
+      axios
+        .get(`http://${config.SERVER_HOST}:1337/posts`, {
+          headers: {
+            Authorization: authContext.auth.token,
+          },
+        })
+        .then((result) => {
+          if (
+            result.data.message ===
+            "You've to complete your infos before visiting this page"
+          ) {
+            authContext.setAuth((old) => {
+              return { ...old, iscomplet: false };
+            });
+          } else {
+            authContext.setAuth((old) => {
+              return { ...old, iscomplet: true };
+            });
+          }
+        });
+    }
+  }, [authContext.auth.token, history]);
+
   return (
     <>
       <Navbar />
       <Switch>
-        <Route path="/confirm/:login/:key" component={Confirm}></Route>
-        <Route path="/reset/:login/:key" exact component={Reset} />
-        <Route path="/unblock" component={unblock} />
-        <Route path="/user/:user" component={User} />
-        <Route path="/signup" exact component={SignUp} />
-        <Route path="/notif" component={Notification} />
-        <Route path="/history" component={Histrory} />
-        <Route path="/post" component={ProfilePAdge} />
-        <Route path="/editprofile" component={EditProfile} />
-        <Route path="/signin" component={SignIn} />
-        <Route path="/profile" component={Profile} />
-        <Route path="/forgot" component={Forgot} />
-        <Route path="/chat" component={Chat} />
-        <Route path="/reset" component={Reset} />
+        <Route
+          path="/confirm/:login/:key"
+          component={isloged() ? Home : Confirm}
+        />
+        <Route
+          path="/reset/:login/:key"
+          exact
+          component={isloged() ? Home : Reset}
+        />
+        <Route path="/user/:user" component={isloged() ? User : Home} />
+        <Route path="/notif" component={isloged() ? Notification : Home} />
+        <Route path="/history" component={isloged() ? History : Home} />
+        <Route path="/unblock" component={isloged() ? unblock : Home} />
+        <Route path="/post" component={isloged() ? ProfilePAdge : Home} />
+        <Route path="/editprofile" component={isloged() ? EditProfile : Home} />
+        <Route
+          path="/profile"
+          component={isloged() && !completProfile() ? Profile : Home}
+        />
+        <Route path="/chat" component={isloged() ? Chat : Home} />
+        <Route path="/signin" component={isloged() ? Home : SignIn} />
+        <Route path="/forgot" component={isloged() ? Home : Forgot} />
+        <Route path="/signup" component={isloged() ? Home : SignUp} />
+        <Route path="/reset" component={isloged() ? Home : Reset} />
         <Route path="/" exact component={Home} />
       </Switch>
       <Footer />

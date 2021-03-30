@@ -44,7 +44,7 @@
 //     cursor: "pointer",
 //   },
 //   border: {
-//     width: "100%",
+//     // width: "100%",
 //     borderColor: "#e1e0e1",
 //     margin: "0",
 //   },
@@ -83,14 +83,11 @@
 //     () => {
 //       let unmount = false;
 //       axios
-//         .get(
-//           `http://${config.SERVER_HOST}:1337/inbox/users`,
-//           {
-//             headers: {
-//               Authorization: localStorage.getItem("Authorization"),
-//             },
-//           }
-//         )
+//         .get(`http://${config.SERVER_HOST}:1337/inbox/users`, {
+//           headers: {
+//             Authorization: localStorage.getItem("Authorization"),
+//           },
+//         })
 //         .then((result) => {
 //           changeIformation(() => {
 //             const arr = [];
