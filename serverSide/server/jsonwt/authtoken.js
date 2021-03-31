@@ -4,7 +4,7 @@ require("dotenv").config();
 
 exports.authenticatetoken = async (req, res, next) => {
   const token = req.headers.authorization;
-
+  console.log("ana hna ");
   if (token == undefined || token == null)
     return res.status(200).json({
       error: true,
