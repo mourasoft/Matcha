@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
@@ -13,7 +13,15 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Avatar from "@material-ui/core/Avatar";
 import Fab from "@material-ui/core/Fab";
 import SendIcon from "@material-ui/icons/Send";
+import axios from "axios";
+import { AuthContext } from "../context/authcontext";
+import config from "../config";
 
+function getInstance(token) {
+  return axios.create({
+    headers: { Authorization: `${token}` },
+  });
+}
 const useStyles = makeStyles({
   table: {
     minWidth: 650,
@@ -36,7 +44,31 @@ const useStyles = makeStyles({
 
 const Chat = () => {
   const classes = useStyles();
+  const authContext = useContext(AuthContext);
+  const {
+    auth: { token, login },
+  } = authContext;
+  const [userOnline, setUserOnline] = useState([]);
+  const [message, setMessage] = useState("");
 
+  function sendMessage(toLogin) {
+    if (message.trim() === "" || message.length > 100) {
+      console.log("msg kbiir");
+    } else {
+      getInstance(token).post(`http://${config.SERVER_HOST}:1337/inbox`, {
+        login: toLogin,
+        msg: message,
+      });
+    }
+  }
+  useEffect(() => {
+    getInstance(token)
+      .get(`http://${config.SERVER_HOST}:1337/inbox/users`)
+      .then((res) => {
+        setUserOnline(res.data);
+      });
+  }, [token]);
+  console.log(message);
   return (
     <div>
       <Grid container>
@@ -49,55 +81,17 @@ const Chat = () => {
       <Grid container component={Paper} className={classes.chatSection}>
         <Grid item xs={3} className={classes.borderRight500}>
           <List>
-            <ListItem button key="RemySharp">
-              <ListItemIcon>
-                <Avatar
-                  alt="Remy Sharp"
-                  src="https://material-ui.com/static/images/avatar/1.jpg"
-                />
-              </ListItemIcon>
-              <ListItemText primary="John Wick"></ListItemText>
-            </ListItem>
-          </List>
-          <Divider />
-          <Grid item xs={12} style={{ padding: "10px" }}>
-            <TextField
-              id="outlined-basic-email"
-              label="Search"
-              variant="outlined"
-              fullWidth
-            />
-          </Grid>
-          <Divider />
-          <List>
-            <ListItem button key="RemySharp">
-              <ListItemIcon>
-                <Avatar
-                  alt="Remy Sharp"
-                  src="https://material-ui.com/static/images/avatar/1.jpg"
-                />
-              </ListItemIcon>
-              <ListItemText primary="Remy Sharp">Remy Sharp</ListItemText>
-              <ListItemText secondary="online" align="right"></ListItemText>
-            </ListItem>
-            <ListItem button key="Alice">
-              <ListItemIcon>
-                <Avatar
-                  alt="Alice"
-                  src="https://material-ui.com/static/images/avatar/3.jpg"
-                />
-              </ListItemIcon>
-              <ListItemText primary="Alice">Alice</ListItemText>
-            </ListItem>
-            <ListItem button key="CindyBaker">
-              <ListItemIcon>
-                <Avatar
-                  alt="Cindy Baker"
-                  src="https://material-ui.com/static/images/avatar/2.jpg"
-                />
-              </ListItemIcon>
-              <ListItemText primary="Cindy Baker">Cindy Baker</ListItemText>
-            </ListItem>
+            {userOnline?.map((e, index) => (
+              <ListItem key={index} button>
+                <ListItemIcon>
+                  <Avatar
+                    alt="Remy Sharp"
+                    src={`http://${config.SERVER_HOST}:1337${config.SERVER_IMGS}${e.img}`}
+                  />
+                </ListItemIcon>
+                <ListItemText primary={e.login}></ListItemText>
+              </ListItem>
+            ))}
           </List>
         </Grid>
         <Grid item xs={9}>
@@ -146,13 +140,21 @@ const Chat = () => {
           <Grid container style={{ padding: "20px" }}>
             <Grid item xs={11}>
               <TextField
+                variant="outlined"
                 id="outlined-basic-email"
                 label="Type Something"
                 fullWidth
+                onChange={(e) => {
+                  setMessage(e.target.value);
+                }}
               />
             </Grid>
             <Grid xs={1} align="right">
-              <Fab color="primary" aria-label="add">
+              <Fab
+                color="primary"
+                aria-label="add"
+                onClick={() => sendMessage("Mouras")}
+              >
                 <SendIcon />
               </Fab>
             </Grid>
