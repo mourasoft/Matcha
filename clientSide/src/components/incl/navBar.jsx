@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "./navBar.css";
 import { Button } from "./button";
-import { Dropdown } from "./dropDown";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext, IsLoggedfn } from "../../context/authcontext";
 import { Logout } from "./logoutbtn";
+import Badge from "@material-ui/core/Badge";
 
-export const Navbar = ({ntfslength, upntfslength, vuentfs}) => {
+export const Navbar = ({ ntfslength, upntfslength, vuentfs }) => {
   const { auth } = useContext(AuthContext);
   const loged = IsLoggedfn();
   const [click, setClick] = useState(false);
@@ -45,13 +45,31 @@ export const Navbar = ({ntfslength, upntfslength, vuentfs}) => {
           </div>
           <ul className={click ? "nav-menu active" : "nav-menu"}>
             <li className="nav-item">
-              <Link to="/" className="nav-links" onClick={closeMobileMenu}>
-                Home
+              <Link
+                to="/history"
+                className="nav-links"
+                onClick={closeMobileMenu}
+              >
+                History
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link to="/Chat" className="nav-links" onClick={closeMobileMenu}>
+                Chat
               </Link>
             </li>
             <li className="nav-item">
               <Link
-                to="/profile"
+                to="/unblock"
+                className="nav-links"
+                onClick={closeMobileMenu}
+              >
+                block
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link
+                to="/editprofile"
                 className="nav-links"
                 onClick={closeMobileMenu}
               >
@@ -59,50 +77,22 @@ export const Navbar = ({ntfslength, upntfslength, vuentfs}) => {
               </Link>
             </li>
             <li className="nav-item">
-              <Link
-                to="/notif"
-                className="nav-links"
-                onClick={() => {
-                  vuentfs();
-                  closeMobileMenu();
-                }}
-              >
-                notif{'/'+ ntfslength}
-              </Link>
+              <div className="nav-links">
+                <Badge badgeContent={ntfslength} color="primary">
+                  {" "}
+                  <Link
+                    to="/notif"
+                    className="nav-links"
+                    onClick={() => {
+                      vuentfs();
+                      closeMobileMenu();
+                    }}
+                  >
+                    notification
+                  </Link>
+                </Badge>
+              </div>
             </li>
-            {/* <li
-			  className="nav-item"
-			  onMouseEnter={onMouseEnter}
-			  onMouseLeave={onMouseLeave}
-			>
-			  <Link to="/service" className="nav-links" onClick={closeMobileMenu}>
-				Services <i className="fas fa-caret-down" />
-			  </Link>
-			  {dropdown && <Dropdown />}
-			</li>
-			<li className="nav-item">
-			  <Link to="/about" className="nav-links" onClick={closeMobileMenu}>
-				About
-			  </Link>
-			</li> */}
-            {/* <li>
-			  <Link
-				to="/signup"
-				className="nav-links-mobile"
-				onClick={closeMobileMenu}
-			  >
-				Sign up
-			  </Link>
-			</li> */}
-            {/* <li>
-			  <Link
-				to="/signin"
-				className="nav-links-mobile"
-				onClick={closeMobileMenu}
-			  >
-				Sign in
-			  </Link>
-			</li> */}
           </ul>
           <Logout />
         </nav>
@@ -124,30 +114,7 @@ export const Navbar = ({ntfslength, upntfslength, vuentfs}) => {
                 Home
               </Link>
             </li>
-            {/* <li
-				className="nav-item"
-				onMouseEnter={onMouseEnter}
-				onMouseLeave={onMouseLeave}
-			  >
-				<Link to="/service" className="nav-links" onClick={closeMobileMenu}>
-				  Services <i className="fas fa-caret-down" />
-				</Link>
-				{dropdown && <Dropdown />}
-			  </li>
-			  <li className="nav-item">
-				<Link to="/about" className="nav-links" onClick={closeMobileMenu}>
-				  About
-				</Link>
-			  </li> */}
-            {/* <li>
-				<Link
-				  to="/signup"
-				  className="nav-links-mobile"
-				  onClick={closeMobileMenu}
-				>
-				  Sign up
-				</Link>
-			  </li> */}
+
             <li>
               <Link
                 to="/signin"

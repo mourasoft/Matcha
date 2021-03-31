@@ -8,7 +8,6 @@ import {
   Avatar,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { Link } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useEffect, useState, useContext } from "react";
@@ -16,7 +15,14 @@ import { useHistory } from "react-router-dom";
 import { AuthContext } from "../context/authcontext";
 import config from "../config";
 import Moment from "react-moment";
-import io from 'socket.io-client';
+import io from "socket.io-client";
+import useInfiniteScroll from "react-infinite-scroll-hook";
+
+function getInstance(token) {
+  return axios.create({
+    headers: { Authorization: `${token}` },
+  });
+}
 
 const Notification = () => {
   const classes = useStyles();
@@ -25,15 +31,14 @@ const Notification = () => {
   } = useContext(AuthContext);
   const [ntfslist, setntfslist] = useState([]);
   const [limit, setlimit] = useState(0);
-
   function configSocket() {
     const socket = io.connect(`http://${config.SERVER_HOST}:1337`);
-    socket.on('connect', (sock) => {
-      socket.on('updatentfs', (mm) => {
-        console.log("update ntfs");
+    socket.on("connect", (sock) => {
+      socket.on("updatentfs", (mm) => {
+        // console.log("update ntfs");
         realTimeAdd();
-      })
-    })
+      });
+    });
   }
 
   useEffect(() => {
@@ -53,17 +58,19 @@ const Notification = () => {
         });
     }
     // eslint-disable-next-line
-  }, [token]);realTimeAdd
-
+  }, [token]);
   function realTimeAdd() {
     if (token) {
       axios
-        .get(`http://${config.SERVER_HOST}:1337/notifications?g_ntsid=`
-        + ((ntfslist[0] != undefined) ? ntfslist[0].nts_id : 0), {
-          headers: {
-            Authorization: token,
-          },
-        })
+        .get(
+          `http://${config.SERVER_HOST}:1337/notifications?g_ntsid=` +
+            (ntfslist[0] != undefined ? ntfslist[0].nts_id : 0),
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
+        )
         .then((res) => {
           if (res.data.success) {
             let data = res.data.data.concat(ntfslist);
@@ -72,19 +79,64 @@ const Notification = () => {
         });
     }
   }
+  function deletNotif(id) {
+    getInstance(token)
+      .delete(`http://${config.SERVER_HOST}:1337/notifications`, {
+        data: {
+          nts_id: id,
+        },
+      })
+      .then((res) => {});
+    setntfslist(
+      ntfslist.filter((info) => {
+        if (info.nts_id !== id) return true;
+        return false;
+      })
+    );
+  }
+
+  const [loading, setLoading] = useState(false);
+
+  function LoadMore() {
+    if (ntfslist.length >= limit) return;
+    setLoading(true);
+    getInstance(token)
+      .get(
+        `http://${config.SERVER_HOST}:1337/notifications?limit=${ntfslist.length}`
+      )
+      .then((res) => {
+        if (res.data.success) {
+          setntfslist((old) => [...old, ...res.data.data]);
+        }
+      });
+    setLoading(false);
+  }
+
+  const scroll = useInfiniteScroll({
+    loading,
+    hasNextPage: true,
+    onLoadMore: LoadMore,
+    scrollContainer: "window",
+  });
 
   return (
     <div>
-    {ntfslist.map(e =>(<NotifComp e={e}/>))}
+      <Typography align="center" gutterBottom variant="h2" component="h2">
+        Notification
+      </Typography>
+      {ntfslist.map((e, index) => (
+        <NotifComp key={index} e={e} deletNotif={deletNotif} scroll={scroll} />
+      ))}
     </div>
   );
 };
 export default Notification;
 
-const NotifComp = ({e}) => {
+const NotifComp = ({ e, deletNotif, scroll }) => {
   const classes = useStyles();
   return (
     <Container
+      ref={scroll}
       style={{
         display: "flex",
         justifyContent: "center",
@@ -95,19 +147,19 @@ const NotifComp = ({e}) => {
     >
       <CssBaseline />
       <Grid className={classes.paper}>
-        <Grid item xs={2}>
-          <Avatar />
-        </Grid>
         <Grid item xs={6}>
-          <span>
-            {e.message}
-          </span>
+          <span>{e.message}</span>
+        </Grid>
+        <Grid item xs={4}>
+          <Moment fromNow>{e.modified_dat}</Moment>
         </Grid>
         <Grid item xs={2}>
-          <span>50 minute</span>
-        </Grid>
-        <Grid item alignContent="center" xs={2}>
-          <Button size="small" variant="contained" color="secondary">
+          <Button
+            onClick={() => deletNotif(e.nts_id)}
+            size="small"
+            variant="contained"
+            color="secondary"
+          >
             Delete
           </Button>
         </Grid>
@@ -138,6 +190,3 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(2, 0, 2),
   },
 }));
-
-
-

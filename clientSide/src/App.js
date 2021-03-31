@@ -14,7 +14,7 @@ import EditProfile from "./pages/editProfile";
 import Notification from "./pages/notification";
 import ProfilePAdge from "./pages/post";
 import User from "./pages/user";
-import unblock from "./pages/unblock";
+import Unblock from "./pages/unblock";
 import axios from "axios";
 import config from "./config";
 import { useHistory } from "react-router-dom";
@@ -124,27 +124,104 @@ function App() {
           exact
           component={isloged() ? Home : Reset}
         />
-        <Route path="/user/:user" component={isloged() ? User : Home} />
+        <Route
+          path="/user/:user"
+          render={(props) => {
+            if (isloged() && !completProfile()) {
+              return <Profile {...props} />;
+            } else if (!isloged()) {
+              return <Home {...props} />;
+            }
+            return <User {...props} />;
+          }}
+        />
         <Route
           path="/notif"
-          component={
-            !completProfile() ? Profile : isloged() ? Notification : Home
-          }
+          render={(props) => {
+            if (isloged() && !completProfile()) {
+              return <Profile {...props} />;
+            } else if (!isloged()) {
+              return <Home {...props} />;
+            }
+            return <Notification {...props} />;
+          }}
         />
-        <Route path="/history" component={Histrory} />
-        <Route path="/unblock" component={unblock} />
-        <Route path="/post" component={ProfilePAdge} />
-        <Route path="/editprofile" component={EditProfile} />
+        <Route
+          path="/history"
+          render={(props) => {
+            if (isloged() && !completProfile()) {
+              return <Profile {...props} />;
+            } else if (!isloged()) {
+              return <Home {...props} />;
+            }
+            return <Histrory {...props} />;
+          }}
+        />
+        <Route
+          path="/unblock"
+          render={(props) => {
+            if (isloged() && !completProfile()) {
+              return <Profile {...props} />;
+            } else if (!isloged()) {
+              return <Home {...props} />;
+            }
+            return <Unblock {...props} />;
+          }}
+        />
+        <Route
+          path="/post"
+          render={(props) => {
+            if (isloged() && !completProfile()) {
+              return <Profile {...props} />;
+            } else if (!isloged()) {
+              return <Home {...props} />;
+            }
+            return <ProfilePAdge {...props} />;
+          }}
+        />
+        <Route
+          path="/editprofile"
+          render={(props) => {
+            if (isloged() && !completProfile()) {
+              return <Profile {...props} />;
+            } else if (!isloged()) {
+              return <Home {...props} />;
+            }
+            return <EditProfile {...props} />;
+          }}
+        />
         <Route
           path="/profile"
           component={isloged() && !completProfile() ? Profile : Home}
         />
-        <Route path="/chat" component={Chat} />
+        <Route
+          path="/chat"
+          render={(props) => {
+            if (isloged() && !completProfile()) {
+              return <Profile {...props} />;
+            } else if (!isloged()) {
+              return <Home {...props} />;
+            }
+            return <Chat {...props} />;
+          }}
+        />
         <Route path="/signin" component={isloged() ? Home : SignIn} />
         <Route path="/forgot" component={isloged() ? Home : Forgot} />
         <Route path="/signup" component={isloged() ? Home : SignUp} />
         <Route path="/reset" component={isloged() ? Home : Reset} />
-        <Route path="/" exact component={Home} />
+        <Route
+          path="/"
+          exact
+          render={(props) => {
+            if (isloged() && !completProfile()) {
+              return <Profile {...props} />;
+            } else if (!isloged()) {
+              return <Home {...props} />;
+            }
+            return <Home {...props} />;
+          }}
+          // component={!completProfile() ? Profile : Home}
+        />
       </Switch>
       <Footer />
     </>

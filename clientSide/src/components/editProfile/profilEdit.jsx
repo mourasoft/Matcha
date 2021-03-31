@@ -27,6 +27,11 @@ import Swal from "sweetalert2";
 import DeleteIcon from "@material-ui/icons/Delete";
 // import PublishIcon from "@material-ui/icons/Publish";
 import { useHistory } from "react-router-dom";
+function getInstance(token) {
+  return axios.create({
+    headers: { Authorization: `${token}` },
+  });
+}
 
 const ProfileEdite = () => {
   const history = useHistory();
@@ -61,23 +66,13 @@ const ProfileEdite = () => {
       typeof authContext.auth.token === "string" &&
       typeof authContext.auth.login === "string"
     ) {
-      axios
+      getInstance(authContext.auth.token)
         .get(
-          `http://${config.SERVER_HOST}:1337/infos?login=${authContext.auth.login}`,
-          {
-            headers: {
-              Authorization: authContext.auth.token,
-            },
-          }
+          `http://${config.SERVER_HOST}:1337/infos?login=${authContext.auth.login}`
         )
         .then((res) => {
           if (res.data.success) {
             let { birthday, city, desc, sex_pref, gendre } = res.data.data[0];
-            if (/[0-9]{4}\/[0-9]{2}\/[0-9]{2}/.test(birthday)) {
-              let split = birthday.split('/');
-              birthday = `${split[1]}/${split[2]}/${split[0]}`;
-              console.log(birthday);
-            }
             setData((old) => ({
               ...old,
               birthday: birthday,

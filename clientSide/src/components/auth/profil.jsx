@@ -22,13 +22,17 @@ import config from "../../config";
 import AddIcon from "@material-ui/icons/Add";
 import useForm from "../../Helpers/useForm";
 import validateProfile from "../../Helpers/validationProfile";
-import Axios from "axios";
+import axios from "axios";
 import { AuthContext } from "../../context/authcontext";
 import { Menu } from "../../Helpers/Tags";
 import Creatable from "react-select/creatable";
 import Swal from "sweetalert2";
 import { useHistory } from "react-router-dom";
-
+function getInstance(token) {
+  return axios.create({
+    headers: { Authorization: `${token}` },
+  });
+}
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -88,7 +92,7 @@ const Profile = () => {
     preferences: "2",
     biography: "",
     birthday: "",
-    city: "",
+    city: "khouribga",
   });
   // set errors
   const [formErrors, setFormErrors] = useState({
@@ -191,54 +195,38 @@ const Profile = () => {
       const { lat, lon } = location;
       let imgs = Object.values(img);
       imgs.forEach((i) => {
-        Axios.post(
-          `http://${config.SERVER_HOST}:1337/images`,
-          { img: i },
-          {
-            headers: {
-              Authorization: token,
-            },
-          }
-        ).then((res) => {});
+        getInstance(token)
+          .post(`http://${config.SERVER_HOST}:1337/images`, { img: i })
+          .then((res) => {});
       });
-      Axios.post(
-        `http://${config.SERVER_HOST}:1337/infos`,
-        {
+      getInstance(token)
+        .post(`http://${config.SERVER_HOST}:1337/infos`, {
           city,
           birthday,
           gendre: gender,
           sexpref: preferences,
           desc: biography,
-        },
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      ).then((res) => {
-        // console.log(res);
-      });
+        })
+        .then((res) => {
+          console.log(res);
+        });
 
-      Axios.post(
-        `http://${config.SERVER_HOST}:1337/tags`,
-        { tags: JSON.stringify(val) },
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      ).then((res) => {
-        // console.log(res);
-      });
-      Axios.post(
-        `http://${config.SERVER_HOST}:1337/position`,
-        { lat, lon },
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      ).then((res) => {});
+      getInstance(token)
+        .post(
+          `http://${config.SERVER_HOST}:1337/tags`,
+          { tags: JSON.stringify(val) },
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
+        )
+        .then((res) => {
+          // console.log(res);
+        });
+      getInstance(token)
+        .post(`http://${config.SERVER_HOST}:1337/position`, { lat, lon })
+        .then((res) => {});
 
       history.replace("/");
     }

@@ -12,9 +12,15 @@ import { AuthContext } from "../context/authcontext";
 import axios from "axios";
 import config from "../config";
 import Swal from "sweetalert2";
-import io from 'socket.io-client';
+import io from "socket.io-client";
+import Moment from "react-moment";
 const socket = io.connect(`http://${config.SERVER_HOST}:1337`);
 
+function getInstance(token) {
+  return axios.create({
+    headers: { Authorization: `${token}` },
+  });
+}
 const useStyles = makeStyles((theme) => ({
   avatar: {
     width: "200px",
@@ -22,8 +28,11 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: "20px",
     marginTop: "20px",
   },
-  cycle: {
+  cycleOnline: {
     color: "green",
+  },
+  cycleOffline: {
+    color: "red",
   },
   btn: {
     margin: "8px",
@@ -56,53 +65,25 @@ const User = () => {
   const [info, setInfo] = useState([]);
   const [image, setImage] = useState([]);
   const [like, setLike] = useState(false);
+  const [rating, setRating] = useState(0);
   function reportUser() {
     if (token && user) {
-      axios
-        .post(
-          `http://${config.SERVER_HOST}:1337/report`,
-          { login: user },
-          {
-            headers: {
-              Authorization: token,
-            },
-          }
-        )
+      getInstance(token)
+        .post(`http://${config.SERVER_HOST}:1337/report`, { login: user })
         .then((res) => {
-          console.log(res);
           if (res.data.success) {
             setReport((old) => ({
               ...old,
               report: report.report === "Reported" ? "Unreported" : "Reported",
             }));
-            // changeError({
-            //   type: "success",
-            //   msg: result.data.message,
-            //   state: true,
-            // });
-          } else if (res.data.error) {
-            //   changeError({
-            //     type: "error",
-            //     msg: result.data.message,
-            //     state: true,
-            //   });
           }
         });
     }
   }
-
   function blockUser() {
     if ((token, user)) {
-      axios
-        .post(
-          `http://${config.SERVER_HOST}:1337/blocks`,
-          { login: user },
-          {
-            headers: {
-              Authorization: token,
-            },
-          }
-        )
+      getInstance(token)
+        .post(`http://${config.SERVER_HOST}:1337/blocks`, { login: user })
         .then((result) => {
           console.log(result);
           if (result.data.success) {
@@ -115,12 +96,8 @@ const User = () => {
 
   useEffect(() => {
     if (token) {
-      axios
-        .get(`http://${config.SERVER_HOST}:1337/infos?login=${user}`, {
-          headers: {
-            Authorization: authContext.auth.token,
-          },
-        })
+      getInstance(token)
+        .get(`http://${config.SERVER_HOST}:1337/infos?login=${user}`)
         .then((res) => {
           if (res.data.error) {
             Swal.fire({
@@ -130,8 +107,6 @@ const User = () => {
             });
             history.replace("/");
           } else if (res.data.success) {
-            // console.log(res.data);
-
             const {
               birthday,
               city,
@@ -150,12 +125,8 @@ const User = () => {
             }));
           }
         });
-      axios
-        .get(`http://${config.SERVER_HOST}:1337/users?login=${user}`, {
-          headers: {
-            Authorization: authContext.auth.token,
-          },
-        })
+      getInstance(token)
+        .get(`http://${config.SERVER_HOST}:1337/users?login=${user}`)
         .then((res) => {
           //   console.log(res);
           if (res.data.success) {
@@ -168,12 +139,8 @@ const User = () => {
             }));
           }
         });
-      axios
-        .get(`http://${config.SERVER_HOST}:1337/tags?login=${user}`, {
-          headers: {
-            Authorization: authContext.auth.token,
-          },
-        })
+      getInstance(token)
+        .get(`http://${config.SERVER_HOST}:1337/tags?login=${user}`)
         .then((res) => {
           let active = [];
           res.data.data?.filter((e) => {
@@ -186,25 +153,18 @@ const User = () => {
             active,
           }));
         });
-      axios
-        .get(`http://${config.SERVER_HOST}:1337/images?login=${user}`, {
-          headers: {
-            Authorization: authContext.auth.token,
-          },
-        })
+      getInstance(token)
+        .get(`http://${config.SERVER_HOST}:1337/images?login=${user}`)
         .then((res) => {
           if (res.data.success) {
             setImage(res.data.data);
           }
         });
-      axios
-        .get(`http://${config.SERVER_HOST}:1337/report?login=${user}`, {
-          headers: {
-            Authorization: token,
-          },
-        })
+      getInstance(token)
+        .get(`http://${config.SERVER_HOST}:1337/report?login=${user}`)
         .then((res) => {
           if (res.data.success) {
+            console.log(res);
             setReport((old) => ({
               ...old,
               report: res.data.ureport ? "Reported" : "Unreported",
@@ -214,25 +174,16 @@ const User = () => {
       /*
        *userRating
        */
-      axios
-        .get(`http://${config.SERVER_HOST}:1337/rating?login=${user}`, {
-          headers: {
-            Authorization: token,
-          },
-        })
-        .then((res) => {
-          // console.log(res);
-          // setuserRating(result.data.totalrat);
-          // setRating(result.data.userrat);
-        });
-      axios
-        .get(`http://${config.SERVER_HOST}:1337/follow?to_login=${user}`, {
-          headers: {
-            Authorization: token,
-          },
-        })
+      getInstance(token)
+        .get(`http://${config.SERVER_HOST}:1337/rating?login=${user}`)
         .then((res) => {
           console.log(res);
+          console.log(res.data.rating);
+          setRating(res.data.rating);
+        });
+      getInstance(token)
+        .get(`http://${config.SERVER_HOST}:1337/follow?to_login=${user}`)
+        .then((res) => {
           if (res.data.success) {
             setLike(res.data.data);
           }
@@ -240,21 +191,42 @@ const User = () => {
     }
     // eslint-disable-next-lineres.
   }, [token]);
-  // console.log(report);
+  console.log(rating);
+  function handleRating(value) {
+    console.log("===========><-----> Iwas clicked");
+    console.log(typeof value);
+    console.log(rating);
+    if (rating === 0) {
+      getInstance(token)
+        .post(`http://${config.SERVER_HOST}:1337/rating`, {
+          rat: value,
+          login: user,
+        })
+        .then((res) => {
+          if (res.data.success) {
+            setRating(value);
+            socket.emit("updatentfs", "");
+          }
+        });
+    } else {
+      getInstance(token)
+        .patch(`http://${config.SERVER_HOST}:1337/rating`, {
+          rat: value,
+          login: user,
+        })
+        .then((res) => {
+          if (res.data.success) setRating(value);
+          else console.log(res.data.message);
+        });
+    }
+  }
+
   function insetLike() {
     if ((token, user)) {
       axios
-        .post(
-          `http://${config.SERVER_HOST}:1337/follow`,
-          {
-            to_login: user,
-          },
-          {
-            headers: {
-              Authorization: token,
-            },
-          }
-        )
+        .post(`http://${config.SERVER_HOST}:1337/follow`, {
+          to_login: user,
+        })
         .then((result) => {
           console.log(result);
           if (result.data.message === "Follow added successfully") {
@@ -263,12 +235,11 @@ const User = () => {
             setLike(false);
           }
         });
-        setTimeout(() => {
-          socket.emit('updatentfs', '');
-        }, 500);
+      setTimeout(() => {
+        socket.emit("updatentfs", "");
+      }, 500);
     }
   }
-  //   console.log(image[0].image_path);
   const { city, gender, preferences, biography } = data;
   const { login, fname, lname } = info;
   if (data.login) return null;
@@ -282,8 +253,33 @@ const User = () => {
         }
         className={classes.avatar}
       />
-      <OnlineStatus className={classes.cycle} /> online
-      <Rating name="read-only" value={3} readOnly />
+      <OnlineStatus
+        className={
+          data.status
+            ? data.status[0].status === "online"
+              ? classes.cycleOnline
+              : classes.cycleOffline
+            : ""
+        }
+      />
+      {data.status ? (
+        data.status[0].status === "online" ? (
+          "Online"
+        ) : (
+          <Moment fromNow>{data?.status[0].modified_dat}</Moment>
+        )
+      ) : (
+        ""
+      )}
+      {/* {console.log("test", rating)} */}
+      <Rating
+        name="rating"
+        value={rating}
+        onChange={(e, newValues) => {
+          handleRating(newValues);
+          setRating(newValues);
+        }}
+      />
       <h2>{login && login}</h2>
       {userlogin !== login?.toLowerCase() ? (
         <div className="btnClick">
@@ -297,33 +293,31 @@ const User = () => {
           >
             <Follow />
           </Button>
-          <Button className={classes.btn} variant="outlined" color="primary">
-            <Block
-              onClick={() => {
-                blockUser();
-              }}
-            />
+          <Button
+            onClick={() => {
+              blockUser();
+            }}
+            className={classes.btn}
+            variant="outlined"
+            color="primary"
+          >
+            <Block />
           </Button>
           <Button
+            onClick={() => {
+              reportUser();
+            }}
             disabled={report.report === "Reported" ? true : false}
             className={classes.btn}
             variant="outlined"
             color="primary"
           >
-            <Report
-              onClick={() => {
-                reportUser();
-              }}
-            />
+            <Report />
           </Button>
         </div>
       ) : null}
       <div className="information">
         <h2>Information</h2>
-        {/* <div className="info">
-          <h4>Age :</h4>
-          <p>{preferences}</p>
-        </div> */}
         <div className="info">
           <h4>Firstname :</h4>
           <p>{fname}</p>

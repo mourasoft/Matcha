@@ -14,7 +14,7 @@ export const Logout = (props) => {
   return (
     // <Link to='/'>
     <button onClick={handleClick} className="bttn">
-      Loug Out
+      Log Out
     </button>
     // </Link>
   );

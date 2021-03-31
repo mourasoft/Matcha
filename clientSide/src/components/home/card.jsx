@@ -21,32 +21,32 @@ import { useHistory } from "react-router-dom";
 import axios from "axios";
 import { useContext } from "react";
 import { AuthContext } from "../../context/authcontext";
-import io from 'socket.io-client';
+import io from "socket.io-client";
 const socket = io.connect(`http://${config.SERVER_HOST}:1337`);
 
 const CardProfile = (props) => {
   const classes = useStyles();
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
   const history = useHistory();
   const { awaykm, age, image, fameRat, infos } = props.data;
 
   let notify = (loginTo) => {
-    socket.emit('updatentfs', '');
-    axios.post(`http://${config.SERVER_HOST}:1337/history/visit`,{login:loginTo},{
-      headers: {
-        Authorization: authContext.auth.token,
-      },
-    }).then((res)=> {
-    console.log(res.data)
-  });
-  }
-    // console.log(args);
+    socket.emit("updatentfs", "");
+    axios
+      .post(
+        `http://${config.SERVER_HOST}:1337/history/visit`,
+        { login: loginTo },
+        {
+          headers: {
+            Authorization: authContext.auth.token,
+          },
+        }
+      )
+      .then((res) => {});
+  };
+  // console.log(args);
   return (
-    <Card
-    
-
-      className={classes.root}
-    >
+    <Card className={classes.root}>
       <CardActionArea className={classes.card}>
         <CardMedia
           className={classes.media}
