@@ -16,6 +16,7 @@ import axios from "axios";
 import { AuthContext } from "../context/authcontext";
 import config from "../config";
 import moment from "moment";
+import BackIcon from "@material-ui/icons/ArrowBackIos";
 
 function getInstance(token) {
   return axios.create({
@@ -37,6 +38,14 @@ const useStyles = makeStyles({
     height: "70vh",
     overflowY: "auto",
   },
+  backIcon: {
+    cursor: "pointer",
+  },
+  GridIcons: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });
 
 const Chat = () => {
@@ -48,6 +57,7 @@ const Chat = () => {
   const [userOnline, setUserOnline] = useState([]);
   const [message, setMessage] = useState("");
   const [showMessage, setShowMessage] = useState([]);
+  const [responsive, setResponsive] = useState(false);
   const [activeUser, setActiveUser] = useState({
     login: "",
     id: "",
@@ -76,6 +86,13 @@ const Chat = () => {
         })
         .then((res) => console.log(res));
       setMessage("");
+      let msg = {
+        // login: toLogin,
+        message: message,
+        modified_dat: new Date(),
+        inbox_id: showMessage[0]?.inbox_id,
+      };
+      setShowMessage((old) => old.concat(msg));
     }
   }
 
@@ -90,18 +107,29 @@ const Chat = () => {
   return (
     <div>
       <Grid container>
-        <Grid item xs={12}>
+        <Grid item xs={12} className={classes.GridIcons}>
+          {responsive ? (
+            <BackIcon
+              className={classes.backIcon}
+              onClick={() => setResponsive(false)}
+            />
+          ) : (
+            ""
+          )}
           <Typography variant="h5" className="header-message">
             Chat
           </Typography>
         </Grid>
       </Grid>
       <Grid container component={Paper} className={classes.chatSection}>
-        <Grid item xs={3} className={classes.borderRight500}>
-          <List>
+        <Grid item xs={12} className={classes.borderRight500}>
+          <List
+            style={responsive ? { display: "none" } : { display: "inline" }}
+          >
             {userOnline?.map((e, index) => (
               <ListItem
                 onClick={() => {
+                  setResponsive(true);
                   setActiveUser({ login: e.login, id: e.user_id });
                   getMessage(parseInt(e.status[0].user_id));
                 }}
@@ -119,8 +147,13 @@ const Chat = () => {
             ))}
           </List>
         </Grid>
-        <Grid item xs={9}>
-          <List className={classes.messageArea}>
+        <Grid item xs={12}>
+          <List
+            style={
+              responsive === false ? { display: "none" } : { display: "block" }
+            }
+            className={classes.messageArea}
+          >
             {showMessage?.map((m, i) => {
               if (activeUser.id === m.user_id) {
                 return (
@@ -154,7 +187,7 @@ const Chat = () => {
                       <Grid item xs={12}>
                         <ListItemText
                           align="right"
-                          secondary="09:30"
+                          secondary={moment(m.created_dat).format("LT")}
                         ></ListItemText>
                       </Grid>
                     </Grid>
@@ -163,8 +196,15 @@ const Chat = () => {
               }
             })}
           </List>
-          <Divider />
-          <Grid container style={{ padding: "20px" }}>
+          <Grid
+            xs={0}
+            style={
+              responsive === false
+                ? { display: "none" }
+                : { display: "block", width: "100%", padding: "20px" }
+            }
+            container
+          >
             <Grid item>
               <TextField
                 disabled={activeUser.login ? false : true}
@@ -178,7 +218,7 @@ const Chat = () => {
                 }}
               />
             </Grid>
-            <Grid xs={1} align="right">
+            <Grid align="right">
               <Fab
                 disabled={activeUser.login ? false : true}
                 color="primary"

@@ -15,7 +15,7 @@ import {
   // Fab,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useCallback } from "react";
 import * as pubIP from "public-ip";
 import * as ipLocation from "iplocation";
 import config from "../../config";
@@ -80,6 +80,7 @@ const useStyles = makeStyles((theme) => ({
 const Profile = () => {
   const authcontext = useContext(AuthContext);
   const classes = useStyles();
+  let unmount = false;
   // set location
   const [location, setLocation] = useState({
     lat: null,
@@ -92,7 +93,7 @@ const Profile = () => {
     preferences: "2",
     biography: "",
     birthday: "",
-    city: "khouribga",
+    city: "Unknown",
   });
   // set errors
   const [formErrors, setFormErrors] = useState({
@@ -104,29 +105,27 @@ const Profile = () => {
   // upload picture profile
   const [img, setImg] = useState([]);
   // position from navigateur
-
+  const showPosition = useCallback(async (pos) => {
+    const { latitude, longitude } = pos.coords;
+    if (!unmount) setLocation({ lat: latitude, lon: longitude });
+    // console.log(lat,lon);
+  }, []);
+  //  position from ipV4
+  const getLocation = useCallback(async (err) => {
+    if (err.code) {
+      try {
+        const publicLoction = await pubIP.v4();
+        const { latitude, longitude } = await ipLocation(publicLoction);
+        if (!unmount) setLocation({ lat: latitude, lon: longitude });
+      } catch (err) {}
+    }
+  }, []);
   // to set localisation
   useEffect(() => {
-    let unmount = false;
-    const showPosition = async (pos) => {
-      const { latitude, longitude } = pos.coords;
-      if (!unmount) setLocation({ lat: latitude, lon: longitude });
-      // console.log(lat,lon);
-    };
-    //  position from ipV4
-    const getLocation = async (err) => {
-      if (err.code) {
-        try {
-          const publicLoction = await pubIP.v4();
-          const { latitude, longitude } = await ipLocation(publicLoction);
-          if (!unmount) setLocation({ lat: latitude, lon: longitude });
-        } catch (err) {}
-      }
-    };
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(showPosition, getLocation);
     }
-    return (unmount = true);
+    return () => (unmount = true);
   }, []);
   console.log(location);
   //  useForm hook
@@ -138,7 +137,7 @@ const Profile = () => {
     formErrors,
     setFormErrors
   );
-
+  console.log(location);
   const photoUpload = (e) => {
     const name = e.target.name;
     e.preventDefault();
@@ -159,28 +158,45 @@ const Profile = () => {
     setTag(e);
     // setTag([...tag, e.value]);
   };
-  let val = tag?.map((test) => {
-    if (
-      test.value.length > 1 &&
-      test.value.length < 20 &&
-      /^[a-zA-Z\s.0-9_-]+$/.test(test.value)
-    ) {
-      test = test.value;
-      return test;
-    } else {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "tag Not valid",
-      });
-      return "";
-    }
-  });
+  // let val = tag?.map((test) => {
+  //   if (
+  //     test.value.length > 1 &&
+  //     test.value.length < 20 &&
+  //     /^[a-zA-Z\s.0-9_-]+$/.test(test.value)
+  //   ) {
+  //     test = test.value;
+  //     return test;
+  //   } else {
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: "Oops...",
+  //       text: "tag Not valid",
+  //     });
+  //     return "";
+  //   }
+  // });
   // console.log(val);
   const isValidNewOption = (inputValue, selectValue) =>
     inputValue.length > 0 && selectValue.length < 5;
 
   function submit() {
+    let val = tag?.map((test) => {
+      if (
+        test.value.length > 1 &&
+        test.value.length < 20 &&
+        /^[a-zA-Z\s.0-9_#-]+$/.test(test.value)
+      ) {
+        test = test.value;
+        return test;
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "tag Not valid",
+        });
+        return "";
+      }
+    });
     if (val.length < 1) {
       Swal.fire({
         icon: "error",
@@ -201,7 +217,9 @@ const Profile = () => {
       imgs.forEach((i) => {
         getInstance(token)
           .post(`http://${config.SERVER_HOST}:1337/images`, { img: i })
-          .then((res) => {});
+          .then((res) => {
+            console.log(res);
+          });
       });
       getInstance(token)
         .post(`http://${config.SERVER_HOST}:1337/infos`, {
@@ -226,11 +244,13 @@ const Profile = () => {
           }
         )
         .then((res) => {
-          // console.log(res);
+          console.log(res);
         });
       getInstance(token)
         .post(`http://${config.SERVER_HOST}:1337/position`, { lat, lon })
-        .then((res) => {});
+        .then((res) => {
+          console.log(res);
+        });
 
       history.replace("/");
     }

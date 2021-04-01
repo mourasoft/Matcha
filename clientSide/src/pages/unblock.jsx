@@ -80,7 +80,7 @@ const Unblock = ({ e, delet }) => {
           <Grid item xs={8}>
             <span>{e.login}</span>
           </Grid>
-          <Grid item alignContent="center" xs={2}>
+          <Grid item xs={2}>
             <Button
               onClick={() => {
                 delet(e.login);

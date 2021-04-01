@@ -173,7 +173,7 @@ const ProfileEdite = () => {
         if (
           test?.value?.length > 1 &&
           test?.value?.length < 20 &&
-          /^[a-zA-Z\s.0-9_-]+$/.test(test.value)
+          /^[a-zA-Z\s.0-9_#-]+$/.test(test.value)
         ) {
           test = test.value;
           return test;
@@ -469,15 +469,11 @@ const ProfileEdite = () => {
           </Grid>
 
           <Grid item xs={12}>
-            {/* <FormControl fullWidth> */}
-            {/* <FormLabel className={classes.labeltag} required component="legend">
-              City
-            </FormLabel> */}
             <Autocomplete
               id="city"
               // value={props.city[props.cityOwner]}
               name="city"
-              options={list}
+              options={list.length && list}
               disableClearable
               // getOptionLabel={(option) => option}
               renderInput={(params) => (

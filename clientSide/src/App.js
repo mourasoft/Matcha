@@ -21,11 +21,18 @@ import { useHistory } from "react-router-dom";
 import Chat from "./pages/chat";
 import Histrory from "./pages/history";
 import io from "socket.io-client";
-
+function getInstance(token) {
+  return axios.create({
+    headers: { Authorization: `${token}` },
+  });
+}
 function App() {
   const history = useHistory();
   const [ntfslength, setntfslength] = useState(0);
   const authContext = useContext(AuthContext);
+  const {
+    auth: { token },
+  } = authContext;
 
   function configSocket() {
     const socket = io.connect(`http://${config.SERVER_HOST}:1337`);
@@ -38,12 +45,8 @@ function App() {
   }
 
   function upntfslength() {
-    axios
-      .get(`http://${config.SERVER_HOST}:1337/notifications?limit=0`, {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      })
+    getInstance(token)
+      .get(`http://${config.SERVER_HOST}:1337/notifications?limit=0`)
       .then((res) => {
         if (res.data.success) {
           setntfslength(res.data.invue_length);
@@ -52,12 +55,8 @@ function App() {
   }
 
   function vuentfs() {
-    axios
-      .get(`http://${config.SERVER_HOST}:1337/notifications/vue`, {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      })
+    getInstance(token)
+      .get(`http://${config.SERVER_HOST}:1337/notifications/vue`)
       .then((res) => {
         if (res.data.success) {
           setntfslength(0);

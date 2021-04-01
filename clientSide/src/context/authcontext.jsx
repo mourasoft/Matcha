@@ -10,9 +10,15 @@ function getInstance(token) {
 
 export const AuthContext = createContext();
 
-const login = localStorage?.getItem("login");
-const token = localStorage?.getItem("token");
-
+let login;
+let token;
+try {
+  login = localStorage?.getItem("login");
+  token = localStorage?.getItem("token");
+} catch (error) {
+  login = "";
+  token = "";
+}
 export function AuthProvider(props) {
   const [auth, setAuth] = useState({});
   // const history = useHistory();

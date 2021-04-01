@@ -28,6 +28,7 @@ const ProfilePAdge = () => {
   const {
     auth: { token },
   } = useContext(AuthContext);
+  let unmont = false;
 
   function filterData() {
     setflag(1);
@@ -80,11 +81,13 @@ const ProfilePAdge = () => {
               sorted
             )}&intereststags=&searchString=&flag=${flag}`
           );
-          if (datas.success) {
-            setData((old) => [...old, ...datas.data]);
+          if (!unmont) {
+            if (datas.success) {
+              setData((old) => [...old, ...datas.data]);
+            }
+            setPages(pages + 20);
+            setLoading(false);
           }
-          setPages(pages + 20);
-          setLoading(false);
         })();
       }
     }, 500);
@@ -110,7 +113,10 @@ const ProfilePAdge = () => {
       }
       if (!unmount) setPages(20);
     })();
-    return (unmount = true);
+    return () => {
+      unmount = true;
+      unmont = true;
+    };
     // eslint-disable-next-line
   }, []);
   return (

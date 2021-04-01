@@ -26,6 +26,7 @@ const Notification = () => {
   } = useContext(AuthContext);
   const [ntfslist, setntfslist] = useState([]);
   const [limit, setlimit] = useState(0);
+  let unmont = false;
   function configSocket() {
     const socket = io.connect(`http://${config.SERVER_HOST}:1337`);
     socket.on("connect", (sock) => {
@@ -37,14 +38,11 @@ const Notification = () => {
   }
 
   useEffect(() => {
+    let unmount;
     if (token) {
       configSocket();
-      axios
-        .get(`http://${config.SERVER_HOST}:1337/notifications?limit=0`, {
-          headers: {
-            Authorization: token,
-          },
-        })
+      getInstance(token)
+        .get(`http://${config.SERVER_HOST}:1337/notifications?limit=0`)
         .then((res) => {
           if (res.data.success) {
             setntfslist(res.data.data);
@@ -52,19 +50,18 @@ const Notification = () => {
           }
         });
     }
+    return () => {
+      unmount = true;
+      unmont = true;
+    };
     // eslint-disable-next-line
   }, [token]);
   function realTimeAdd() {
     if (token) {
-      axios
+      getInstance(token)
         .get(
           `http://${config.SERVER_HOST}:1337/notifications?g_ntsid=` +
-            (ntfslist[0] !== undefined ? ntfslist[0].nts_id : 0),
-          {
-            headers: {
-              Authorization: token,
-            },
-          }
+            (ntfslist[0] !== undefined ? ntfslist[0].nts_id : 0)
         )
         .then((res) => {
           if (res.data.success) {
