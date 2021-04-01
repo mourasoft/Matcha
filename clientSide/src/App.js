@@ -78,12 +78,8 @@ function App() {
     // socketon();
     if (authContext.auth.token) {
       configSocket();
-      axios
-        .get(`http://${config.SERVER_HOST}:1337/posts`, {
-          headers: {
-            Authorization: authContext.auth.token,
-          },
-        })
+      getInstance(token)
+        .get(`http://${config.SERVER_HOST}:1337/posts`)
         .then((result) => {
           if (
             result.data.message ===
@@ -99,6 +95,7 @@ function App() {
           }
         });
     }
+    // eslint-disable-next-line
   }, [authContext.auth.token, history]);
 
   return (

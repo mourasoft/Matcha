@@ -26,6 +26,7 @@ const Notification = () => {
   } = useContext(AuthContext);
   const [ntfslist, setntfslist] = useState([]);
   const [limit, setlimit] = useState(0);
+  const [free, setfree] = useState(false);
   let unmont = false;
   function configSocket() {
     const socket = io.connect(`http://${config.SERVER_HOST}:1337`);
@@ -45,14 +46,16 @@ const Notification = () => {
         .get(`http://${config.SERVER_HOST}:1337/notifications?limit=0`)
         .then((res) => {
           if (res.data.success) {
-            setntfslist(res.data.data);
-            setlimit(res.data.length);
+            if (!unmount) setntfslist(res.data.data);
+            if (!unmount) setlimit(res.data.length);
           }
         });
     }
+    setfree(true);
     return () => {
       unmount = true;
       unmont = true;
+      setfree(false);
     };
     // eslint-disable-next-line
   }, [token]);
@@ -110,6 +113,7 @@ const Notification = () => {
     onLoadMore: LoadMore,
     scrollContainer: "window",
   });
+  if (!free) return null;
 
   return (
     <div>

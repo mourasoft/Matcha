@@ -79,8 +79,9 @@ const useStyles = makeStyles((theme) => ({
 
 const Profile = () => {
   const authcontext = useContext(AuthContext);
+  const [unmount, setUnmount] = useState(false);
   const classes = useStyles();
-  let unmount = false;
+  // let unmount = false;
   // set location
   const [location, setLocation] = useState({
     lat: null,
@@ -105,29 +106,36 @@ const Profile = () => {
   // upload picture profile
   const [img, setImg] = useState([]);
   // position from navigateur
-  const showPosition = useCallback(async (pos) => {
-    const { latitude, longitude } = pos.coords;
-    if (!unmount) setLocation({ lat: latitude, lon: longitude });
-    // console.log(lat,lon);
-  }, []);
+  const showPosition = useCallback(
+    async (pos) => {
+      const { latitude, longitude } = pos.coords;
+      if (!unmount) setLocation({ lat: latitude, lon: longitude });
+    },
+    [unmount]
+  );
   //  position from ipV4
-  const getLocation = useCallback(async (err) => {
-    if (err.code) {
-      try {
-        const publicLoction = await pubIP.v4();
-        const { latitude, longitude } = await ipLocation(publicLoction);
-        if (!unmount) setLocation({ lat: latitude, lon: longitude });
-      } catch (err) {}
-    }
-  }, []);
+  const getLocation = useCallback(
+    async (err) => {
+      if (err.code) {
+        try {
+          const publicLoction = await pubIP.v4();
+          const { latitude, longitude } = await ipLocation(publicLoction);
+          if (!unmount) setLocation({ lat: latitude, lon: longitude });
+        } catch (err) {}
+      }
+    },
+    [unmount]
+  );
   // to set localisation
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(showPosition, getLocation);
     }
-    return () => (unmount = true);
-  }, []);
-  console.log(location);
+    return () => {
+      setUnmount(true);
+      // unmount = true;
+    };
+  }, [unmount, showPosition, getLocation]);
   //  useForm hook
   const { handleChange, values, handleSubmit, errors } = useForm(
     submit,
@@ -137,7 +145,6 @@ const Profile = () => {
     formErrors,
     setFormErrors
   );
-  console.log(location);
   const photoUpload = (e) => {
     const name = e.target.name;
     e.preventDefault();
@@ -217,9 +224,7 @@ const Profile = () => {
       imgs.forEach((i) => {
         getInstance(token)
           .post(`http://${config.SERVER_HOST}:1337/images`, { img: i })
-          .then((res) => {
-            console.log(res);
-          });
+          .then((res) => {});
       });
       getInstance(token)
         .post(`http://${config.SERVER_HOST}:1337/infos`, {
@@ -229,28 +234,14 @@ const Profile = () => {
           sexpref: preferences,
           desc: biography,
         })
-        .then((res) => {
-          console.log(res);
-        });
+        .then((res) => {});
 
-      getInstance(token)
-        .post(
-          `http://${config.SERVER_HOST}:1337/tags`,
-          { tags: JSON.stringify(val) },
-          {
-            headers: {
-              Authorization: token,
-            },
-          }
-        )
-        .then((res) => {
-          console.log(res);
-        });
+      getInstance(token).post(`http://${config.SERVER_HOST}:1337/tags`, {
+        tags: JSON.stringify(val),
+      });
       getInstance(token)
         .post(`http://${config.SERVER_HOST}:1337/position`, { lat, lon })
-        .then((res) => {
-          console.log(res);
-        });
+        .then((res) => {});
 
       history.replace("/");
     }

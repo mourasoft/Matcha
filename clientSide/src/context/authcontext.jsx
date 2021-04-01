@@ -29,7 +29,6 @@ export function AuthProvider(props) {
           `http://${config.SERVER_HOST}:1337/auth`
         );
         if (data.success) {
-          console.log("data is set in auth");
           setAuth((oldVlas) => ({
             ...oldVlas,
             token,
@@ -44,7 +43,6 @@ export function AuthProvider(props) {
       };
       isValid();
     } else {
-      console.log("invalid token");
       setAuth((oldValue) => {
         return { ...oldValue, token: null };
       });

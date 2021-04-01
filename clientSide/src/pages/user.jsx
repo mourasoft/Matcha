@@ -187,7 +187,6 @@ const User = () => {
 
     // eslint-disable-next-lineres.
   }, [token, user, history]);
-  console.log("ana");
   function handleRating(value) {
     if (rating === 0) {
       getInstance(token)

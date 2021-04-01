@@ -25,6 +25,7 @@ const ProfilePAdge = () => {
   const [loading, setLoading] = useState(false);
   const classes = useStyles();
   const [flag, setflag] = useState(0);
+  const [free, setfree] = useState(false);
   const {
     auth: { token },
   } = useContext(AuthContext);
@@ -113,12 +114,17 @@ const ProfilePAdge = () => {
       }
       if (!unmount) setPages(20);
     })();
+    setfree(true);
     return () => {
       unmount = true;
       unmont = true;
+      setfree(false);
     };
     // eslint-disable-next-line
   }, []);
+
+  if (!free) return null;
+
   return (
     <>
       <Filter

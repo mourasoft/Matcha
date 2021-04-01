@@ -54,7 +54,6 @@ exports.getntfs = async (req, res) => {
 
 exports.deleteNtfs = async (req, res) => {
   const { nts_id } = req.body;
-  console.log(req);
 
   let data = await ntfsmodel.getntfs_where("`nts_id` = ? AND `user_id` = ?", [
     nts_id,

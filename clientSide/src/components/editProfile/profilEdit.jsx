@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Grid,
   TextField,
@@ -33,6 +33,8 @@ function getInstance(token) {
 }
 
 const ProfileEdite = () => {
+  const _isMounted = useRef(true);
+
   const history = useHistory();
   const classes = useStyles();
   const authContext = useContext(AuthContext);
@@ -70,17 +72,19 @@ const ProfileEdite = () => {
           `http://${config.SERVER_HOST}:1337/infos?login=${authContext.auth.login}`
         )
         .then((res) => {
-          if (res.data.success) {
-            let { birthday, city, desc, sex_pref, gendre } = res.data.data[0];
-            setData((old) => ({
-              ...old,
-              birthday: birthday,
-              city: city,
-              biography: desc,
-              gender: gendre === "female" ? "1" : "2",
-              preferences:
-                sex_pref === "female" ? "1" : sex_pref === "male" ? "2" : "3",
-            }));
+          if (_isMounted.current) {
+            if (res.data.success) {
+              let { birthday, city, desc, sex_pref, gendre } = res.data.data[0];
+              setData((old) => ({
+                ...old,
+                birthday: birthday,
+                city: city,
+                biography: desc,
+                gender: gendre === "female" ? "1" : "2",
+                preferences:
+                  sex_pref === "female" ? "1" : sex_pref === "male" ? "2" : "3",
+              }));
+            }
           }
         });
       getInstance(authContext.auth.token)
@@ -88,15 +92,17 @@ const ProfileEdite = () => {
           `http://${config.SERVER_HOST}:1337/users?login=${authContext.auth.login}`
         )
         .then((res) => {
-          if (res.data.success) {
-            const { email, first_name, last_name, login } = res.data.data[0];
-            setData((old) => ({
-              ...old,
-              fname: first_name,
-              lname: last_name,
-              email: email,
-              login: login,
-            }));
+          if (_isMounted.current) {
+            if (res.data.success) {
+              const { email, first_name, last_name, login } = res.data.data[0];
+              setData((old) => ({
+                ...old,
+                fname: first_name,
+                lname: last_name,
+                email: email,
+                login: login,
+              }));
+            }
           }
         });
       getInstance(authContext.auth.token)
@@ -104,38 +110,45 @@ const ProfileEdite = () => {
           `http://${config.SERVER_HOST}:1337/tags?login=${authContext.auth.login}`
         )
         .then((res) => {
-          let active = [];
-          let inactive = [];
-          res.data.data?.filter((e) => {
-            if (e.state === "active") {
-              active.push({ label: e.tag, value: e.tag });
-              return "";
-            } else {
-              inactive.push({ label: e.tag, value: e.tag });
-              return "";
-            }
-          });
-          setTag((old) => ({
-            ...old,
-            act: active,
-            ina: inactive,
-          }));
+          if (_isMounted.current) {
+            let active = [];
+            let inactive = [];
+            res.data.data?.filter((e) => {
+              if (e.state === "active") {
+                active.push({ label: e.tag, value: e.tag });
+                return "";
+              } else {
+                inactive.push({ label: e.tag, value: e.tag });
+                return "";
+              }
+            });
+            setTag((old) => ({
+              ...old,
+              act: active,
+              ina: inactive,
+            }));
+          }
         });
       getInstance(authContext.auth.token)
         .get(
           `http://${config.SERVER_HOST}:1337/images?login=${authContext.auth.login}`
         )
         .then((res) => {
-          if (res.data.success) {
-            // console.log(res.data.data);
-            let Imgs = [];
-            res.data.data.forEach((e) => {
-              Imgs.push(e.image_path);
-            });
-            setImg((old) => [...old, ...Imgs]);
+          if (_isMounted.current) {
+            if (res.data.success) {
+              // console.log(res.data.data);
+              let Imgs = [];
+              res.data.data.forEach((e) => {
+                Imgs.push(e.image_path);
+              });
+              setImg((old) => [...old, ...Imgs]);
+            }
           }
         });
     }
+    return () => {
+      _isMounted.current = false;
+    };
   }, [authContext.auth.token, authContext.auth.login]);
   const handleChangeTag = (e, a) => {
     setTag((old) => ({ ...old, act: e }));

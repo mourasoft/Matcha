@@ -197,15 +197,12 @@ const Chat = () => {
             })}
           </List>
           <Grid
-            xs={0}
             style={
-              responsive === false
-                ? { display: "none" }
-                : { display: "block", width: "100%", padding: "20px" }
+              responsive === false ? { display: "none" } : { padding: "20px" }
             }
             container
           >
-            <Grid item>
+            <Grid xs={10} item>
               <TextField
                 disabled={activeUser.login ? false : true}
                 variant="outlined"
@@ -218,7 +215,7 @@ const Chat = () => {
                 }}
               />
             </Grid>
-            <Grid align="right">
+            <Grid item xs={2} align="right">
               <Fab
                 disabled={activeUser.login ? false : true}
                 color="primary"

@@ -127,7 +127,6 @@ const Filter = ({
           color="primary"
           style={{ outlined: "center" }}
           onClick={() => {
-            console.log("filter Clicked");
             // pages();
             filterData();
           }}

@@ -10,15 +10,12 @@ async function getResponse(login, key) {
       `http://${config.SERVER_HOST}:1337/confirm?login=${login}&key=${key}`
     );
     return res;
-  } catch (e) {
-    console.log(e);
-  }
+  } catch (e) {}
 }
 
 function Confirm() {
   const { login, key } = useParams();
   const history = useHistory();
-  console.log(login, key);
 
   useEffect(() => {
     const data = async () => {

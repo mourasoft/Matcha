@@ -61,10 +61,9 @@ exports.getPosts = async (req, res, next) => {
   validationData(req);
   if (req.query.searchString == undefined) req.query.searchString = "";
   req.query.sortType = arr[req.query.sortType - 1];
-  if (req.query.flag != undefined)
-    req.query.flag = parseInt(req.query.flag);
+  if (req.query.flag != undefined) req.query.flag = parseInt(req.query.flag);
   if (req.query.flag == undefined || req.query.flag < 0 || req.query.flag > 1)
     req.query.flag = 0;
-  console.log('=>', req.query.flag);
+  // console.log('=>', req.query.flag);
   next();
 };

@@ -53,13 +53,13 @@ const PasswordEdit = () => {
             title: "Oops...",
             text: error,
           });
-        }else if(res.data.success === true){
+        } else if (res.data.success === true) {
           Swal.fire({
             icon: "success",
             title: "success",
-            text: "Your Wassword Was Changed",
+            text: "Your password was Changed",
           });
-          history.replace('/')
+          history.replace("/");
         }
       });
   }
