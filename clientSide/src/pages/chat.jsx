@@ -16,6 +16,7 @@ import SendIcon from "@material-ui/icons/Send";
 import axios from "axios";
 import { AuthContext } from "../context/authcontext";
 import config from "../config";
+import moment from "moment";
 
 function getInstance(token) {
   return axios.create({
@@ -50,17 +51,38 @@ const Chat = () => {
   } = authContext;
   const [userOnline, setUserOnline] = useState([]);
   const [message, setMessage] = useState("");
+  const [showMessage, setShowMessage] = useState([]);
+  const [activeUser, setActiveUser] = useState({
+    login: "",
+    id: "",
+  });
 
+  function getMessage(user) {
+    getInstance(token)
+      .get(`http://${config.SERVER_HOST}:1337/inbox/messages?user_id=${user}`)
+      .then((res) => {
+        if (res.data.success) {
+          console.log(res.data);
+          setShowMessage(res.data.data);
+        }
+      });
+  }
+  console.log(showMessage);
   function sendMessage(toLogin) {
     if (message.trim() === "" || message.length > 100) {
       console.log("msg kbiir");
+      setMessage("");
     } else {
-      getInstance(token).post(`http://${config.SERVER_HOST}:1337/inbox`, {
-        login: toLogin,
-        msg: message,
-      });
+      getInstance(token)
+        .post(`http://${config.SERVER_HOST}:1337/inbox`, {
+          login: toLogin,
+          msg: message,
+        })
+        .then((res) => console.log(res));
+      setMessage("");
     }
   }
+
   useEffect(() => {
     getInstance(token)
       .get(`http://${config.SERVER_HOST}:1337/inbox/users`)
@@ -68,7 +90,7 @@ const Chat = () => {
         setUserOnline(res.data);
       });
   }, [token]);
-  console.log(message);
+  console.log(activeUser.id);
   return (
     <div>
       <Grid container>
@@ -82,10 +104,17 @@ const Chat = () => {
         <Grid item xs={3} className={classes.borderRight500}>
           <List>
             {userOnline?.map((e, index) => (
-              <ListItem key={index} button>
+              <ListItem
+                onClick={() => {
+                  setActiveUser({ login: e.login, id: e.user_id });
+                  getMessage(parseInt(e.status[0].user_id));
+                }}
+                key={index}
+                button
+              >
                 <ListItemIcon>
                   <Avatar
-                    alt="Remy Sharp"
+                    alt={e.login}
                     src={`http://${config.SERVER_HOST}:1337${config.SERVER_IMGS}${e.img}`}
                   />
                 </ListItemIcon>
@@ -96,9 +125,50 @@ const Chat = () => {
         </Grid>
         <Grid item xs={9}>
           <List className={classes.messageArea}>
-            <ListItem key="1">
-              <Grid container>
-                <Grid item xs={12}>
+            {showMessage?.map((m, i) => {
+              if (activeUser.id === m.user_id) {
+                return (
+                  <ListItem key={i}>
+                    <Grid item xs={12}>
+                      <Grid container>
+                        <ListItemText
+                          align="left"
+                          primary={m.message}
+                        ></ListItemText>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <ListItemText
+                          align="left"
+                          secondary={moment(m.created_dat).format("LT")}
+                        ></ListItemText>
+                      </Grid>
+                    </Grid>
+                  </ListItem>
+                );
+              } else {
+                return (
+                  <ListItem key={i}>
+                    <Grid item xs={12}>
+                      <Grid container>
+                        <ListItemText
+                          align="right"
+                          primary={m.message}
+                        ></ListItemText>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <ListItemText
+                          align="right"
+                          secondary="09:30"
+                        ></ListItemText>
+                      </Grid>
+                    </Grid>
+                  </ListItem>
+                );
+              }
+            })}
+            {/* <ListItem key="1">
+              <Grid item xs={12}>
+                <Grid container>
                   <ListItemText
                     align="right"
                     primary="Hey man, What's up ?"
@@ -108,8 +178,8 @@ const Chat = () => {
                   <ListItemText align="right" secondary="09:30"></ListItemText>
                 </Grid>
               </Grid>
-            </ListItem>
-            <ListItem key="2">
+            </ListItem> */}
+            {/* <ListItem key="2">
               <Grid container>
                 <Grid item xs={12}>
                   <ListItemText
@@ -121,8 +191,8 @@ const Chat = () => {
                   <ListItemText align="left" secondary="09:31"></ListItemText>
                 </Grid>
               </Grid>
-            </ListItem>
-            <ListItem key="3">
+            </ListItem> */}
+            {/* <ListItem key="3">
               <Grid container>
                 <Grid item xs={12}>
                   <ListItemText
@@ -134,7 +204,7 @@ const Chat = () => {
                   <ListItemText align="right" secondary="10:30"></ListItemText>
                 </Grid>
               </Grid>
-            </ListItem>
+            </ListItem> */}
           </List>
           <Divider />
           <Grid container style={{ padding: "20px" }}>
@@ -144,6 +214,7 @@ const Chat = () => {
                 id="outlined-basic-email"
                 label="Type Something"
                 fullWidth
+                value={message}
                 onChange={(e) => {
                   setMessage(e.target.value);
                 }}
@@ -153,7 +224,7 @@ const Chat = () => {
               <Fab
                 color="primary"
                 aria-label="add"
-                onClick={() => sendMessage("Mouras")}
+                onClick={() => sendMessage(activeUser.login)}
               >
                 <SendIcon />
               </Fab>
