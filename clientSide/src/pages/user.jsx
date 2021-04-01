@@ -223,7 +223,7 @@ const User = () => {
 
   function insetLike() {
     if ((token, user)) {
-      axios
+      getInstance(token)
         .post(`http://${config.SERVER_HOST}:1337/follow`, {
           to_login: user,
         })
