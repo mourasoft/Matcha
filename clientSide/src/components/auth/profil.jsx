@@ -15,7 +15,7 @@ import {
   // Fab,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { useState, useEffect, useCallback, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import * as pubIP from "public-ip";
 import * as ipLocation from "iplocation";
 import config from "../../config";
@@ -104,28 +104,31 @@ const Profile = () => {
   // upload picture profile
   const [img, setImg] = useState([]);
   // position from navigateur
-  const showPosition = useCallback(async (pos) => {
-    const { latitude, longitude } = pos.coords;
-    setLocation({ lat: latitude, lon: longitude });
-    // console.log(lat,lon);
-  }, []);
-  //  position from ipV4
-  const getLocation = useCallback(async (err) => {
-    if (err.code) {
-      try {
-        const publicLoction = await pubIP.v4();
-        const { latitude, longitude } = await ipLocation(publicLoction);
-        setLocation({ lat: latitude, lon: longitude });
-      } catch (err) {}
-    }
-  }, []);
+
   // to set localisation
   useEffect(() => {
+    let unmount = false;
+    const showPosition = async (pos) => {
+      const { latitude, longitude } = pos.coords;
+      if (!unmount) setLocation({ lat: latitude, lon: longitude });
+      // console.log(lat,lon);
+    };
+    //  position from ipV4
+    const getLocation = async (err) => {
+      if (err.code) {
+        try {
+          const publicLoction = await pubIP.v4();
+          const { latitude, longitude } = await ipLocation(publicLoction);
+          if (!unmount) setLocation({ lat: latitude, lon: longitude });
+        } catch (err) {}
+      }
+    };
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(showPosition, getLocation);
     }
-  }, [showPosition, getLocation]);
-
+    return (unmount = true);
+  }, []);
+  console.log(location);
   //  useForm hook
   const { handleChange, values, handleSubmit, errors } = useForm(
     submit,

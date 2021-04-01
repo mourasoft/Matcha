@@ -83,14 +83,9 @@ const ProfileEdite = () => {
             }));
           }
         });
-      axios
+      getInstance(authContext.auth.token)
         .get(
-          `http://${config.SERVER_HOST}:1337/users?login=${authContext.auth.login}`,
-          {
-            headers: {
-              Authorization: authContext.auth.token,
-            },
-          }
+          `http://${config.SERVER_HOST}:1337/users?login=${authContext.auth.login}`
         )
         .then((res) => {
           if (res.data.success) {
@@ -104,14 +99,9 @@ const ProfileEdite = () => {
             }));
           }
         });
-      axios
+      getInstance(authContext.auth.token)
         .get(
-          `http://${config.SERVER_HOST}:1337/tags?login=${authContext.auth.login}`,
-          {
-            headers: {
-              Authorization: authContext.auth.token,
-            },
-          }
+          `http://${config.SERVER_HOST}:1337/tags?login=${authContext.auth.login}`
         )
         .then((res) => {
           let active = [];
@@ -131,14 +121,9 @@ const ProfileEdite = () => {
             ina: inactive,
           }));
         });
-      axios
+      getInstance(authContext.auth.token)
         .get(
-          `http://${config.SERVER_HOST}:1337/images?login=${authContext.auth.login}`,
-          {
-            headers: {
-              Authorization: authContext.auth.token,
-            },
-          }
+          `http://${config.SERVER_HOST}:1337/images?login=${authContext.auth.login}`
         )
         .then((res) => {
           if (res.data.success) {
@@ -228,31 +213,21 @@ const ProfileEdite = () => {
        * send tags
        */
       try {
-        axios.post(
-          `http://${config.SERVER_HOST}:1337/tags`,
-          { tags: JSON.stringify(val) },
-          {
-            headers: {
-              Authorization: authContext.auth.login,
-            },
-          }
-        );
+        getInstance(authContext.auth.token)
+          .post(`http://${config.SERVER_HOST}:1337/tags`, {
+            tags: JSON.stringify(val),
+          })
+          .then((res) => {
+            console.log(res);
+          });
       } catch (e) {}
 
       try {
         const clearedImgs = img.filter((el) => el.indexOf("data:", 0) === 0);
         // console.log(clearedImgs);
         clearedImgs?.forEach((el) => {
-          axios
-            .post(
-              `http://${config.SERVER_HOST}:1337/images`,
-              { img: el },
-              {
-                headers: {
-                  Authorization: authContext.auth.token,
-                },
-              }
-            )
+          getInstance(authContext.auth.token)
+            .post(`http://${config.SERVER_HOST}:1337/images`, { img: el })
             .then((res) => {
               //backend response
             });
@@ -260,22 +235,14 @@ const ProfileEdite = () => {
       } catch (e) {}
 
       try {
-        axios
-          .patch(
-            `http://${config.SERVER_HOST}:1337/infos`,
-            {
-              city,
-              birthday,
-              gendre: gender,
-              sexpref: preferences,
-              desc: biography,
-            },
-            {
-              headers: {
-                Authorization: authContext.auth.token,
-              },
-            }
-          )
+        getInstance(authContext.auth.token)
+          .patch(`http://${config.SERVER_HOST}:1337/infos`, {
+            city,
+            birthday,
+            gendre: gender,
+            sexpref: preferences,
+            desc: biography,
+          })
           .then((res) => {
             // backend respose
             // console.log(res);
@@ -283,16 +250,13 @@ const ProfileEdite = () => {
       } catch (e) {}
 
       try {
-        axios
-          .patch(
-            `http://${config.SERVER_HOST}:1337/users`,
-            { first_name: fname, last_name: lname, email, login },
-            {
-              headers: {
-                Authorization: authContext.auth.token,
-              },
-            }
-          )
+        getInstance(authContext.auth.token)
+          .patch(`http://${config.SERVER_HOST}:1337/users`, {
+            first_name: fname,
+            last_name: lname,
+            email,
+            login,
+          })
           .then(({ data }) => {
             if (data.success) {
               // refresh

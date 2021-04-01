@@ -65,9 +65,7 @@ const ProfilePAdge = () => {
       if (pages >= dataLength) {
         setLoading(false);
       }
-
-      const token = localStorage.getItem("token");
-
+      // const token = localStorage.getItem("token");
       setLoading(true);
       if (token !== undefined) {
         (async () => {
@@ -93,26 +91,26 @@ const ProfilePAdge = () => {
   }
   useEffect(() => {
     // const token = localStorage.getItem("token");
-    if (token !== undefined) {
-      (async () => {
-        const { data: datas } = await getInstance(token).get(
-          `http://${config.SERVER_HOST}:1337/posts?limit=${pages}&minAge=${
-            age[0]
-          }&maxAge=${age[1]}&minLoc=${km[0]}&maxLoc=${km[1]}&minCtags=${
-            tag[0]
-          }&maxCtags=${tag[1]}&minFameRat=${rating[0]}&maxFameRat=${
-            rating[1]
-          }&sortType=${parseInt(
-            sorted
-          )}&intereststags=&searchString=&flag=${flag}`
-        );
-        if (datas.success) {
-          setData(datas.data);
-          setDataLength(datas.length);
-        }
-        setPages(20);
-      })();
-    }
+    let unmount = false;
+    (async () => {
+      const { data: datas } = await getInstance(token).get(
+        `http://${config.SERVER_HOST}:1337/posts?limit=${pages}&minAge=${
+          age[0]
+        }&maxAge=${age[1]}&minLoc=${km[0]}&maxLoc=${km[1]}&minCtags=${
+          tag[0]
+        }&maxCtags=${tag[1]}&minFameRat=${rating[0]}&maxFameRat=${
+          rating[1]
+        }&sortType=${parseInt(
+          sorted
+        )}&intereststags=&searchString=&flag=${flag}`
+      );
+      if (datas.success) {
+        if (!unmount) setData(datas.data);
+        if (!unmount) setDataLength(datas.length);
+      }
+      if (!unmount) setPages(20);
+    })();
+    return (unmount = true);
     // eslint-disable-next-line
   }, []);
   return (

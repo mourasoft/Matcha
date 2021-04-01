@@ -1,5 +1,4 @@
 import React, { useState, createContext, useEffect, useContext } from "react";
-import { useHistory } from "react-router-dom";
 import axios from "axios";
 import config from "../config";
 
@@ -11,8 +10,8 @@ function getInstance(token) {
 
 export const AuthContext = createContext();
 
-const token = localStorage.getItem("token");
-const login = localStorage.getItem("login");
+const login = localStorage?.getItem("login");
+const token = localStorage?.getItem("token");
 
 export function AuthProvider(props) {
   const [auth, setAuth] = useState({});

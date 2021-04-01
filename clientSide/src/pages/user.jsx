@@ -94,6 +94,7 @@ const User = () => {
   }
 
   useEffect(() => {
+    let unmount = false;
     if (token) {
       getInstance(token)
         .get(`http://${config.SERVER_HOST}:1337/infos?login=${user}`)
@@ -184,9 +185,10 @@ const User = () => {
           }
         });
     }
+    return (unmount = true);
     // eslint-disable-next-lineres.
   }, [token, user, history]);
-
+  console.log("ana");
   function handleRating(value) {
     if (rating === 0) {
       getInstance(token)
