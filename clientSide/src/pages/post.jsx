@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Filter from "../components/home/filter";
 import CardProfile from "../components/home/card";
 import axios from "axios";
@@ -6,6 +6,7 @@ import config from "../config";
 import { Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useInfiniteScroll from "react-infinite-scroll-hook";
+import { AuthContext } from "../context/authcontext";
 
 function getInstance(token) {
   return axios.create({
@@ -24,10 +25,13 @@ const ProfilePAdge = () => {
   const [loading, setLoading] = useState(false);
   const classes = useStyles();
   const [flag, setflag] = useState(0);
+  const {
+    auth: { token },
+  } = useContext(AuthContext);
 
   function filterData() {
     setflag(1);
-    const token = localStorage.getItem("token");
+    // const token = localStorage.getItem("token");
     if (token !== undefined) {
       setPages(0);
       (async () => {
@@ -65,7 +69,6 @@ const ProfilePAdge = () => {
       const token = localStorage.getItem("token");
 
       setLoading(true);
-      console.log("anahna");
       if (token !== undefined) {
         (async () => {
           const { data: datas } = await getInstance(token).get(
@@ -81,7 +84,6 @@ const ProfilePAdge = () => {
           );
           if (datas.success) {
             setData((old) => [...old, ...datas.data]);
-            console.log("Data lenght from upload", data.length);
           }
           setPages(pages + 20);
           setLoading(false);
@@ -90,7 +92,7 @@ const ProfilePAdge = () => {
     }, 500);
   }
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    // const token = localStorage.getItem("token");
     if (token !== undefined) {
       (async () => {
         const { data: datas } = await getInstance(token).get(

@@ -2,36 +2,34 @@ import React, { useEffect, useState } from "react";
 import "./navBar.css";
 import { Button } from "./button";
 import { Link } from "react-router-dom";
-import { useContext } from "react";
-import { AuthContext, IsLoggedfn } from "../../context/authcontext";
+import { IsLoggedfn } from "../../context/authcontext";
 import { Logout } from "./logoutbtn";
 import Badge from "@material-ui/core/Badge";
 
 export const Navbar = ({ ntfslength, upntfslength, vuentfs }) => {
-  const { auth } = useContext(AuthContext);
   const loged = IsLoggedfn();
   const [click, setClick] = useState(false);
-  const [dropdown, setDropdown] = useState(false);
+  // const [dropdown, setDropdown] = useState(false);
   const handleClick = () => setClick(!click);
   const closeMobileMenu = () => setClick(false);
-  const onMouseEnter = () => {
-    if (window.innerWidth < 960) {
-      setDropdown(false);
-    } else {
-      setDropdown(true);
-    }
-  };
+  // const onMouseEnter = () => {
+  //   if (window.innerWidth < 960) {
+  //     setDropdown(false);
+  //   } else {
+  //     setDropdown(true);
+  //   }
+  // };
 
   useEffect(() => {
     upntfslength();
-  }, []);
-  const onMouseLeave = () => {
-    if (window.innerWidth < 960) {
-      setDropdown(false);
-    } else {
-      setDropdown(false);
-    }
-  };
+  }, [upntfslength]);
+  // const onMouseLeave = () => {
+  //   if (window.innerWidth < 960) {
+  //     setDropdown(false);
+  //   } else {
+  //     setDropdown(false);
+  //   }
+  // };
 
   if (typeof loged === "string") {
     return (

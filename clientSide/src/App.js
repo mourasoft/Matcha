@@ -21,7 +21,6 @@ import { useHistory } from "react-router-dom";
 import Chat from "./pages/chat";
 import Histrory from "./pages/history";
 import io from "socket.io-client";
-import { useScrollTrigger } from "@material-ui/core";
 
 function App() {
   const history = useHistory();
@@ -35,9 +34,6 @@ function App() {
       socket.on("updatelengthntfs", (rien) => {
         upntfslength();
       });
-      // socket.on('updatentfs', () => {
-      //   console.log("heheheehe");
-      // })
     });
   }
 
@@ -79,7 +75,6 @@ function App() {
     if (authContext.auth.iscomplet) return true;
     else return false;
   }
-  console.log(completProfile());
   useEffect(() => {
     // socketon();
     if (authContext.auth.token) {

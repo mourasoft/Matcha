@@ -3,15 +3,11 @@ import {
   CssBaseline,
   Typography,
   Grid,
-  TextField,
   Button,
-  Avatar,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
-import Swal from "sweetalert2";
 import { useEffect, useState, useContext } from "react";
-import { useHistory } from "react-router-dom";
 import { AuthContext } from "../context/authcontext";
 import config from "../config";
 import Moment from "react-moment";
@@ -25,9 +21,8 @@ function getInstance(token) {
 }
 
 const Notification = () => {
-  const classes = useStyles();
   const {
-    auth: { token, login },
+    auth: { token },
   } = useContext(AuthContext);
   const [ntfslist, setntfslist] = useState([]);
   const [limit, setlimit] = useState(0);
@@ -64,7 +59,7 @@ const Notification = () => {
       axios
         .get(
           `http://${config.SERVER_HOST}:1337/notifications?g_ntsid=` +
-            (ntfslist[0] != undefined ? ntfslist[0].nts_id : 0),
+            (ntfslist[0] !== undefined ? ntfslist[0].nts_id : 0),
           {
             headers: {
               Authorization: token,

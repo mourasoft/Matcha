@@ -85,7 +85,6 @@ const User = () => {
       getInstance(token)
         .post(`http://${config.SERVER_HOST}:1337/blocks`, { login: user })
         .then((result) => {
-          console.log(result);
           if (result.data.success) {
             history.replace("/post");
           } else if (result.data.error) {
@@ -128,7 +127,6 @@ const User = () => {
       getInstance(token)
         .get(`http://${config.SERVER_HOST}:1337/users?login=${user}`)
         .then((res) => {
-          //   console.log(res);
           if (res.data.success) {
             const { email, first_name, last_name, login } = res.data.data[0];
             setInfo(() => ({
@@ -164,7 +162,6 @@ const User = () => {
         .get(`http://${config.SERVER_HOST}:1337/report?login=${user}`)
         .then((res) => {
           if (res.data.success) {
-            console.log(res);
             setReport((old) => ({
               ...old,
               report: res.data.ureport ? "Reported" : "Unreported",
@@ -177,8 +174,6 @@ const User = () => {
       getInstance(token)
         .get(`http://${config.SERVER_HOST}:1337/rating?login=${user}`)
         .then((res) => {
-          console.log(res);
-          console.log(res.data.rating);
           setRating(res.data.rating);
         });
       getInstance(token)
@@ -190,12 +185,9 @@ const User = () => {
         });
     }
     // eslint-disable-next-lineres.
-  }, [token]);
-  console.log(rating);
+  }, [token, user, history]);
+
   function handleRating(value) {
-    console.log("===========><-----> Iwas clicked");
-    console.log(typeof value);
-    console.log(rating);
     if (rating === 0) {
       getInstance(token)
         .post(`http://${config.SERVER_HOST}:1337/rating`, {
@@ -216,7 +208,6 @@ const User = () => {
         })
         .then((res) => {
           if (res.data.success) setRating(value);
-          else console.log(res.data.message);
         });
     }
   }
@@ -228,7 +219,6 @@ const User = () => {
           to_login: user,
         })
         .then((result) => {
-          console.log(result);
           if (result.data.message === "Follow added successfully") {
             setLike(true);
           } else if (result.data.message === "Follow deleted successfully") {
@@ -271,7 +261,6 @@ const User = () => {
       ) : (
         ""
       )}
-      {/* {console.log("test", rating)} */}
       <Rating
         name="rating"
         value={rating}

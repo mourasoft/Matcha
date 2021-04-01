@@ -11,7 +11,7 @@ import {
   FormControl,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-// import AddIcon from "@material-ui/icons/Add";
+
 import { Menu } from "../../Helpers/Tags";
 import Creatable from "react-select/creatable";
 import useForm from "../../Helpers/useForm";
@@ -25,7 +25,6 @@ import { AuthContext } from "../../context/authcontext";
 import { useContext } from "react";
 import Swal from "sweetalert2";
 import DeleteIcon from "@material-ui/icons/Delete";
-// import PublishIcon from "@material-ui/icons/Publish";
 import { useHistory } from "react-router-dom";
 function getInstance(token) {
   return axios.create({
@@ -326,13 +325,15 @@ const ProfileEdite = () => {
     e.preventDefault();
     const reader = new FileReader();
     const file = e.target.files[0];
-    reader.onload = () => {
-      setImg((oldImgs) => {
-        if (oldImgs.length === 5) return oldImgs;
-        return [...oldImgs, reader.result];
-      });
-    };
-    reader.readAsDataURL(file);
+    if (file.size !== 0) {
+      reader.onload = () => {
+        setImg((oldImgs) => {
+          if (oldImgs.length === 5) return oldImgs;
+          return [...oldImgs, reader.result];
+        });
+      };
+      reader.readAsDataURL(file);
+    }
   };
   function deleteFn(imgName) {
     let data = img.filter((image) => image !== imgName);

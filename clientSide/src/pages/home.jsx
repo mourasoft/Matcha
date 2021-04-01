@@ -1,13 +1,10 @@
-import { useContext } from "react";
-import { AuthContext, IsLoggedfn } from "../context/authcontext";
+import { IsLoggedfn } from "../context/authcontext";
 import ProfilePAdge from "./post";
 import SignIn from "../components/auth/signIn";
 
 const Home = () => {
-  const { auth } = useContext(AuthContext);
   const loged = IsLoggedfn();
 
-  // console.log(auth);
   if (typeof loged === "undefined") {
     return <SignIn />;
   }

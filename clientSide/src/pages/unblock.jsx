@@ -11,38 +11,32 @@ import {
   Avatar,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Swal from "sweetalert2";
+function getInstance(token) {
+  return axios.create({
+    headers: { Authorization: `${token}` },
+  });
+}
 
 const UnblockUser = () => {
   const authContext = useContext(AuthContext);
   const {
-    auth: { token, login: userlogin },
+    auth: { token },
   } = authContext;
   const [block, setBlock] = useState([]);
 
   function deletBlock(toDelet) {
-    console.log("you must delet it from ");
-    axios
+    getInstance(token)
       .delete(`http://${config.SERVER_HOST}:1337/blocks`, {
         data: { login: toDelet },
-        headers: {
-          Authorization: token,
-        },
       })
       .then((res) => {});
     setBlock(block.filter((e) => e.login !== toDelet));
   }
   useEffect(() => {
     if (token) {
-      console.log("ana dkhalt tani");
-      axios
-        .get(`http://${config.SERVER_HOST}:1337/blocks/get`, {
-          headers: {
-            Authorization: token,
-          },
-        })
+      getInstance(token)
+        .get(`http://${config.SERVER_HOST}:1337/blocks/get`)
         .then((res) => {
-          console.log(res.data.success);
           if (res.data.success) {
             setBlock(res.data.data);
           }
@@ -50,7 +44,7 @@ const UnblockUser = () => {
       // eslint-disable-next-line
     }
   }, [token]);
-  console.log(block);
+
   return (
     <>
       <Typography align="center" gutterBottom variant="h2" component="h2">

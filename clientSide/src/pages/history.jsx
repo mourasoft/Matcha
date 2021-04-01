@@ -8,7 +8,6 @@ import {
   CssBaseline,
   Grid,
   Button,
-  Avatar,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useInfiniteScroll from "react-infinite-scroll-hook";
@@ -17,7 +16,7 @@ import Moment from "react-moment";
 const Histrory = () => {
   const authContext = useContext(AuthContext);
   const {
-    auth: { token, login: userlogin },
+    auth: { token },
   } = authContext;
   const [history, setHistory] = useState([]);
   const [dataLenght, setDataLenght] = useState();

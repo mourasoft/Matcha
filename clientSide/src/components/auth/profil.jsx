@@ -141,14 +141,15 @@ const Profile = () => {
     e.preventDefault();
     const reader = new FileReader();
     const file = e.target.files[0];
-    // console.log(e.target.files[0]);
-    reader.onload = () => {
-      setImg({
-        ...img,
-        [name]: reader.result,
-      });
-    };
-    reader.readAsDataURL(file);
+    if (file.size !== 0) {
+      reader.onload = () => {
+        setImg({
+          ...img,
+          [name]: reader.result,
+        });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleChangeTag = (e, a) => {
