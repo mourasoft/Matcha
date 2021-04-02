@@ -65,14 +65,12 @@ const Reset = () => {
   const { login, key } = useParams();
 
   function submit() {
-    // console.log(login, key);
     axios
       .post(
         `http://${config.SERVER_HOST}:1337/users/changepasswd?login=${login}&key=${key}`,
         data
       )
       .then((res) => {
-        console.log(res);
         if (res.data.success === false) {
           var error = res.data.message;
           Swal.fire({

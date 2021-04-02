@@ -14,7 +14,7 @@ import validateForgot from "../../Helpers/validationForgot";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useHistory } from "react-router-dom";
-import config from '../../config'
+import config from "../../config";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -55,11 +55,9 @@ const Forgot = () => {
     setFormErrors
   );
   function submit() {
-    // console.log(object);
     axios
       .post(`http://${config.SERVER_HOST}/users/reset/password`, data)
       .then((res) => {
-        console.log(res);
         if (res.data.success === false) {
           var error = res.data.message;
           Swal.fire({
@@ -68,7 +66,6 @@ const Forgot = () => {
             text: error,
           });
         } else if (res.data.success === true) {
-          // console.log(res);
           Swal.fire({
             icon: "success",
             title: "success",

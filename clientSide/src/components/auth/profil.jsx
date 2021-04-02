@@ -165,58 +165,51 @@ const Profile = () => {
     setTag(e);
     // setTag([...tag, e.value]);
   };
-  // let val = tag?.map((test) => {
-  //   if (
-  //     test.value.length > 1 &&
-  //     test.value.length < 20 &&
-  //     /^[a-zA-Z\s.0-9_-]+$/.test(test.value)
-  //   ) {
-  //     test = test.value;
-  //     return test;
-  //   } else {
-  //     Swal.fire({
-  //       icon: "error",
-  //       title: "Oops...",
-  //       text: "tag Not valid",
-  //     });
-  //     return "";
-  //   }
-  // });
-  // console.log(val);
+
   const isValidNewOption = (inputValue, selectValue) =>
     inputValue.length > 0 && selectValue.length < 5;
 
   function submit() {
-    let val = tag?.map((test) => {
-      if (
-        test.value.length > 1 &&
-        test.value.length < 20 &&
-        /^[a-zA-Z\s.0-9_#-]+$/.test(test.value)
-      ) {
-        test = test.value;
-        return test;
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "tag Not valid",
-        });
-        return "";
-      }
-    });
-    if (val.length < 1) {
+    let hasError = false;
+
+    if (tag) {
+      var val = tag?.map((test, iKey) => {
+        if (
+          test?.value?.length > 1 &&
+          test?.value?.length < 20 &&
+          /^[a-zA-Z\s.0-9_#-]+$/.test(test.value)
+        ) {
+          test = test.value;
+          return test;
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "tag Not valid",
+          });
+          return "";
+        }
+      });
+    }
+
+    if (val?.length < 1) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Choose a Tag ",
       });
-    } else if (img.img === undefined) {
+      hasError = true;
+    } else if (img?.length === 0) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: "Choose a Picture ",
+        text: "Select a image",
       });
-    } else {
+      hasError = true;
+    }
+
+    if (hasError) return;
+    else {
       const { token } = authcontext.auth;
       const { gender, city, birthday, preferences, biography } = values;
       const { lat, lon } = location;
@@ -243,7 +236,7 @@ const Profile = () => {
         .post(`http://${config.SERVER_HOST}:1337/position`, { lat, lon })
         .then((res) => {});
 
-      history.replace("/");
+      history.go("/");
     }
   }
 

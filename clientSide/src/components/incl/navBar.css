@@ -49,6 +49,11 @@
   text-decoration: none;
   padding: 0.5rem 1rem;
 }
+.nav-notif {
+  color: white;
+  text-decoration: none;
+  /* padding: 0.5rem 1rem; */
+}
 
 .nav-links:hover {
   background-color: #1888ff;

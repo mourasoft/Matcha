@@ -93,7 +93,10 @@ socketio.on("connection", (socket) => {
   socket.on("updatentfs", (msg) => {
     socket.broadcast.emit("updatentfs", "");
     socket.broadcast.emit("updatelengthntfs", "");
+  });
 
+  socket.on("updatemessages", (rien) => {
+    socket.broadcast.emit("updatemessages", "");
   });
 
   // socket.on("msg", (msg) => {

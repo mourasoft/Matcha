@@ -1,15 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import "./navBar.css";
 import { Button } from "./button";
 import { Link } from "react-router-dom";
 import { IsLoggedfn } from "../../context/authcontext";
 import { Logout } from "./logoutbtn";
 import Badge from "@material-ui/core/Badge";
+import { AuthContext } from "../../context/authcontext";
+import { useHistory } from "react-router-dom";
 
 export const Navbar = ({ ntfslength, upntfslength, vuentfs }) => {
   const loged = IsLoggedfn();
   const [click, setClick] = useState(false);
-  // const [dropdown, setDropdown] = useState(false);
+  const history = useHistory();
+  const { setAuth } = useContext(AuthContext);
   const handleClick = () => setClick(!click);
   const closeMobileMenu = () => setClick(false);
   // const onMouseEnter = () => {
@@ -30,6 +33,11 @@ export const Navbar = ({ ntfslength, upntfslength, vuentfs }) => {
   //     setDropdown(false);
   //   }
   // };
+  const LogOutfunction = () => {
+    setAuth({});
+    localStorage.clear();
+    history.go("/");
+  };
 
   if (typeof loged === "string") {
     return (
@@ -80,7 +88,7 @@ export const Navbar = ({ ntfslength, upntfslength, vuentfs }) => {
                   {" "}
                   <Link
                     to="/notif"
-                    className="nav-links"
+                    className="nav-notif"
                     onClick={() => {
                       vuentfs();
                       closeMobileMenu();
@@ -90,6 +98,18 @@ export const Navbar = ({ ntfslength, upntfslength, vuentfs }) => {
                   </Link>
                 </Badge>
               </div>
+            </li>
+            <li>
+              <Link
+                to="/signup"
+                className="nav-links-mobile"
+                onClick={() => {
+                  LogOutfunction();
+                  closeMobileMenu();
+                }}
+              >
+                Log Out
+              </Link>
             </li>
           </ul>
           <Logout />
@@ -115,11 +135,11 @@ export const Navbar = ({ ntfslength, upntfslength, vuentfs }) => {
 
             <li>
               <Link
-                to="/signin"
+                to="/signup"
                 className="nav-links-mobile"
                 onClick={closeMobileMenu}
               >
-                Sign in
+                Sign Up
               </Link>
             </li>
           </ul>

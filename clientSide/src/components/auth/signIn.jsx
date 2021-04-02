@@ -77,9 +77,6 @@ const SignIn = () => {
     setFormErrors
   );
   function submit() {
-    // console.log("clicked");
-    // send api request to validat data and get token
-    // console.log(`http://${config.SERVER_HOST}:1337/users/signin`);
     axios
       .post(`http://${config.SERVER_HOST}:1337/users/signin`, data)
       .then((res) => {

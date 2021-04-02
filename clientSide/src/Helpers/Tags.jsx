@@ -5,7 +5,7 @@ import { components } from "react-select";
 
 export const Menu = (props) => {
   const optionSelectedLength = props.getValue().length || 0;
-  // console.log(props.children);
+
   return (
     <components.Menu {...props}>
       {optionSelectedLength < 5 ? (

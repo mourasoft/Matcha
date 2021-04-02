@@ -144,13 +144,13 @@ let Changelocation = async (userid, city) => {
           fname: login,
           lname: login,
           email: login + "@" + login + ".com",
-          passwd: login + "@1337",
+          passwd: login + "@Ha1337",
         });
         infos = {
           user_id: result.data[0].user_id,
           city: city,
           desc: "Hello i am from " + city,
-          birthday: Math.floor(2021 - Math.random() * 50) + "/01/01",
+          birthday: Math.floor(2002 - Math.random() * 30) + "/01/01",
           gendre: gendres[Math.floor(Math.random() * 2)],
           sexpref: sexpref[Math.floor(Math.random() * 3)],
         };

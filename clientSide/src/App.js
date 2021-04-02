@@ -21,6 +21,8 @@ import { useHistory } from "react-router-dom";
 import Chat from "./pages/chat";
 import Histrory from "./pages/history";
 import io from "socket.io-client";
+import NotFound from "./pages/notFound";
+
 function getInstance(token) {
   return axios.create({
     headers: { Authorization: `${token}` },
@@ -39,7 +41,9 @@ function App() {
     socket.on("connect", (sock) => {
       socket.emit("Authorization", authContext.auth.token);
       socket.on("updatelengthntfs", (rien) => {
-        upntfslength();
+        setTimeout(() => {
+          upntfslength();
+        }, 500);
       });
     });
   }
@@ -213,6 +217,7 @@ function App() {
           }}
           // component={!completProfile() ? Profile : Home}
         />
+        <Route component={NotFound} />
       </Switch>
       <Footer />
     </>

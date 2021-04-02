@@ -2,7 +2,7 @@ import React, { useEffect, useContext, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
-import Divider from "@material-ui/core/Divider";
+
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import List from "@material-ui/core/List";
@@ -17,6 +17,9 @@ import { AuthContext } from "../context/authcontext";
 import config from "../config";
 import moment from "moment";
 import BackIcon from "@material-ui/icons/ArrowBackIos";
+import io from "socket.io-client";
+
+const socket = io.connect(`http://${config.SERVER_HOST}:1337`);
 
 function getInstance(token) {
   return axios.create({
@@ -63,22 +66,35 @@ const Chat = () => {
     id: "",
   });
 
+  function updateMessages() {
+    setTimeout(() => {
+      getInstance(token)
+        .get(
+          `http://${config.SERVER_HOST}:1337/inbox/messages?user_id=${activeUser.id}&g_msgid=${showMessage.length}`
+        )
+        .then((res) => {
+          if (res.data.success && res.data.data.length) {
+            setShowMessage(showMessage.concat(res.data.data));
+          }
+        });
+    }, 500);
+  }
+
   function getMessage(user) {
     getInstance(token)
       .get(`http://${config.SERVER_HOST}:1337/inbox/messages?user_id=${user}`)
       .then((res) => {
         if (res.data.success) {
-          console.log(res.data);
           setShowMessage(res.data.data);
         }
       });
   }
-  console.log(showMessage);
   function sendMessage(toLogin) {
     if (message.trim() === "" || message.length > 100) {
-      console.log("msg kbiir");
       setMessage("");
     } else {
+      socket.emit("updatentfs", "");
+      socket.emit("updatemessages", "");
       getInstance(token)
         .post(`http://${config.SERVER_HOST}:1337/inbox`, {
           login: toLogin,
@@ -96,6 +112,10 @@ const Chat = () => {
     }
   }
 
+  socket.on("updatemessages", (rien) => {
+    if (activeUser.id !== "") updateMessages();
+  });
+
   useEffect(() => {
     getInstance(token)
       .get(`http://${config.SERVER_HOST}:1337/inbox/users`)
@@ -103,7 +123,7 @@ const Chat = () => {
         setUserOnline(res.data);
       });
   }, [token]);
-  console.log(activeUser.id);
+
   return (
     <div>
       <Grid container>

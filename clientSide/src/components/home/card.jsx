@@ -44,7 +44,7 @@ const CardProfile = (props) => {
       )
       .then((res) => {});
   };
-  // console.log(args);
+
   return (
     <Card className={classes.root}>
       <CardActionArea className={classes.card}>
@@ -57,9 +57,7 @@ const CardProfile = (props) => {
           <Typography gutterBottom variant="h5" component="h2">
             {infos[0].first_name + " "} {infos[0].last_name}
           </Typography>
-          {/* <Typography gutterBottom variant="h5" component="h2">
-              {"@"+infos[0].login} 
-            </Typography> */}
+
           <Typography variant="h6" component="h2">
             {parseInt(awaykm)} KM
           </Typography>

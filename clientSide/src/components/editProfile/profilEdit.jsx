@@ -136,7 +136,6 @@ const ProfileEdite = () => {
         .then((res) => {
           if (_isMounted.current) {
             if (res.data.success) {
-              // console.log(res.data.data);
               let Imgs = [];
               res.data.data.forEach((e) => {
                 Imgs.push(e.image_path);
@@ -178,7 +177,7 @@ const ProfileEdite = () => {
       login,
       email,
     } = values;
-    // console.log(typeof preferences);
+
     let hasError = false;
 
     if (tag.act) {
@@ -200,7 +199,6 @@ const ProfileEdite = () => {
         }
       });
     }
-
     if (val.length < 1) {
       Swal.fire({
         icon: "error",
@@ -216,28 +214,20 @@ const ProfileEdite = () => {
       });
       hasError = true;
     }
-    // console.log("fname", fname);
+
     if (hasError) return;
     else {
-      // console.log("something happend");
-      // console.log(">> :: ", lname);
-
-      /**
-       * send tags
-       */
       try {
         getInstance(authContext.auth.token)
           .post(`http://${config.SERVER_HOST}:1337/tags`, {
             tags: JSON.stringify(val),
           })
-          .then((res) => {
-            console.log(res);
-          });
+          .then((res) => {});
       } catch (e) {}
 
       try {
         const clearedImgs = img.filter((el) => el.indexOf("data:", 0) === 0);
-        // console.log(clearedImgs);
+
         clearedImgs?.forEach((el) => {
           getInstance(authContext.auth.token)
             .post(`http://${config.SERVER_HOST}:1337/images`, { img: el })
@@ -256,10 +246,7 @@ const ProfileEdite = () => {
             sexpref: preferences,
             desc: biography,
           })
-          .then((res) => {
-            // backend respose
-            // console.log(res);
-          });
+          .then((res) => {});
       } catch (e) {}
 
       try {
@@ -324,11 +311,9 @@ const ProfileEdite = () => {
           name: imgName,
         },
       })
-      .then((res) => {
-        // console.log(res);
-      });
+      .then((res) => {});
   }
-  // console.log(img);
+
   return (
     <>
       <form

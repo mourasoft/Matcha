@@ -45,7 +45,6 @@ const PasswordEdit = () => {
         }
       )
       .then((res) => {
-        console.log(res);
         if (res.data.error === true) {
           var error = res.data.message;
           Swal.fire({

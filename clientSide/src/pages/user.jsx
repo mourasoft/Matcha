@@ -7,7 +7,7 @@ import "../css/user.css";
 import { makeStyles } from "@material-ui/core/styles";
 import Rating from "@material-ui/lab/Rating";
 import OnlineStatus from "@material-ui/icons/FiberManualRecord";
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useContext, useState, useRef } from "react";
 import { AuthContext } from "../context/authcontext";
 import axios from "axios";
 import config from "../config";
@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const User = () => {
+  const _isMounted = useRef(true);
   const classes = useStyles();
   const { user } = useParams();
   const history = useHistory();
@@ -94,7 +95,7 @@ const User = () => {
   }
 
   useEffect(() => {
-    if (token) {
+    if (token && _isMounted.current) {
       getInstance(token)
         .get(`http://${config.SERVER_HOST}:1337/infos?login=${user}`)
         .then((res) => {
@@ -184,8 +185,9 @@ const User = () => {
           }
         });
     }
-
-    // eslint-disable-next-lineres.
+    return () => {
+      _isMounted.current = false;
+    };
   }, [token, user, history]);
   function handleRating(value) {
     if (rating === 0) {
@@ -207,11 +209,14 @@ const User = () => {
           login: user,
         })
         .then((res) => {
-          if (res.data.success) setRating(value);
+          if (res.data.success) {
+            setRating(value);
+            socket.emit("updatentfs", "");
+          }
         });
     }
   }
-
+  // console.log(data);
   function insetLike() {
     if ((token, user)) {
       getInstance(token)
@@ -219,6 +224,7 @@ const User = () => {
           to_login: user,
         })
         .then((result) => {
+          // console.log(result);
           if (result.data.message === "Follow added successfully") {
             setLike(true);
           } else if (result.data.message === "Follow deleted successfully") {

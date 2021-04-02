@@ -42,7 +42,6 @@ const Histrory = () => {
           },
         })
         .then((res) => {
-          console.log();
           if (res.data.data) {
             setHistory(res.data.data);
             setDataLenght(res.data.length);
@@ -52,7 +51,7 @@ const Histrory = () => {
     }
   }, [token]);
   const [loading, setLoading] = useState(false);
-  console.log(history);
+
   function loadMore() {
     if (history.length >= dataLenght) return; //
     setLoading(true);
@@ -66,10 +65,7 @@ const Histrory = () => {
         }
       )
       .then((res) => {
-        console.log(res);
-        console.log("======>>>>>>>", res.data.data);
-
-        // console.log(arr);
+        // .log(arr);
         setHistory((old) => [...old, ...res.data.data]);
       });
 
@@ -81,8 +77,7 @@ const Histrory = () => {
     onLoadMore: loadMore,
     scrollContainer: "window",
   });
-  console.log(history);
-  console.log(dataLenght);
+
   return (
     <>
       <Typography align="center" gutterBottom variant="h2" component="h2">

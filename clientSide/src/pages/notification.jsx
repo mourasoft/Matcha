@@ -27,13 +27,13 @@ const Notification = () => {
   const [ntfslist, setntfslist] = useState([]);
   const [limit, setlimit] = useState(0);
   const [free, setfree] = useState(false);
-  let unmont = false;
   function configSocket() {
     const socket = io.connect(`http://${config.SERVER_HOST}:1337`);
     socket.on("connect", (sock) => {
       socket.on("updatentfs", (mm) => {
-        // console.log("update ntfs");
-        realTimeAdd();
+        setTimeout(() => {
+          realTimeAdd();
+        }, 500);
       });
     });
   }
@@ -54,7 +54,6 @@ const Notification = () => {
     setfree(true);
     return () => {
       unmount = true;
-      unmont = true;
       setfree(false);
     };
     // eslint-disable-next-line
@@ -147,7 +146,7 @@ const NotifComp = ({ e, deletNotif, scroll }) => {
           <span>{e.message}</span>
         </Grid>
         <Grid item xs={4}>
-          <Moment fromNow>{e.modified_dat}</Moment>
+          <Moment fromNow>{e.creat_dat}</Moment>
         </Grid>
         <Grid item xs={2}>
           <Button

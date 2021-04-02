@@ -94,7 +94,6 @@ const ProfilePAdge = () => {
     }, 500);
   }
   useEffect(() => {
-    // const token = localStorage.getItem("token");
     let unmount = false;
     (async () => {
       const { data: datas } = await getInstance(token).get(
@@ -117,7 +116,7 @@ const ProfilePAdge = () => {
     setfree(true);
     return () => {
       unmount = true;
-      unmont = true;
+
       setfree(false);
     };
     // eslint-disable-next-line
