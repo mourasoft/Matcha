@@ -1,7 +1,5 @@
 import { AuthContext } from "../context/authcontext";
 import { useContext, useEffect, useState } from "react";
-import axios from "axios";
-import config from "../config";
 import {
   Typography,
   Container,
@@ -12,6 +10,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import useInfiniteScroll from "react-infinite-scroll-hook";
 import Moment from "react-moment";
+import  { getInstance } from "../Helpers/instance";
 
 const Histrory = () => {
   const authContext = useContext(AuthContext);
@@ -20,12 +19,12 @@ const Histrory = () => {
   } = authContext;
   const [history, setHistory] = useState([]);
   const [dataLenght, setDataLenght] = useState();
+  const [loading, setLoading] = useState(false);
+  
+
   function deletBlock(toDelet) {
-    axios
-      .delete(`http://${config.SERVER_HOST}:1337/history`, {
-        headers: {
-          Authorization: token,
-        },
+    getInstance(token)
+      .delete(`history`, {
         data: {
           history_id: toDelet,
         },
@@ -33,14 +32,12 @@ const Histrory = () => {
       .then((res) => {});
     setHistory(history.filter((e) => e.history_id !== toDelet));
   }
+ 
+
   useEffect(() => {
     if (token) {
-      axios
-        .get(`http://${config.SERVER_HOST}:1337/history?limit=0`, {
-          headers: {
-            Authorization: token,
-          },
-        })
+      getInstance(token)
+        .get(`history?limit=0`)
         .then((res) => {
           if (res.data.data) {
             setHistory(res.data.data);
@@ -50,22 +47,16 @@ const Histrory = () => {
       // eslint-disable-next-line
     }
   }, [token]);
-  const [loading, setLoading] = useState(false);
+  
 
   function loadMore() {
     if (history.length >= dataLenght) return; //
     setLoading(true);
-    axios
+    getInstance(token)
       .get(
-        `http://${config.SERVER_HOST}:1337/history?limit=${history.length}`,
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
+        `history?limit=${history.length}`
       )
       .then((res) => {
-        // .log(arr);
         setHistory((old) => [...old, ...res.data.data]);
       });
 
@@ -127,9 +118,19 @@ const Unblock = ({ e, delet, scroll }) => {
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(2),
     display: "flex",
     flexDirection: "wrap",
     alignItems: "center",
+    backgroundColor: "#d6d6d6",
+    padding: "5px",
+    borderRadius:"5px",
+    "&:hover": {
+      // backgroundColor:"red",
+      transform: "scale(1.05)",
+      transition: "0.01s",
+    
+    }
   },
+
 }));

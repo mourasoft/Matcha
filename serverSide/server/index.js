@@ -8,6 +8,8 @@ require("dotenv").config();
 var cors = require("cors");
 
 app.use(cors());
+
+console.log("im in");
 // app.use(fileupload());
 app.use(cookieparser());
 app.use(express.static(__dirname + "/public"));
@@ -99,9 +101,9 @@ socketio.on("connection", (socket) => {
     socket.broadcast.emit("updatemessages", "");
   });
 
-  // socket.on("msg", (msg) => {
-  //   socket.broadcast.emit("updateMsg", "");
-  // });
+  socket.on("msg", (msg) => {
+    socket.broadcast.emit("updateMsg", "");
+  });
 
   socket.on("disconnect", async (kk) => {
     if (socket.user_id) {

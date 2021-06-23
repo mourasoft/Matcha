@@ -278,6 +278,13 @@ const ProfileEdite = () => {
                 text: data.message,
               });
             } else {
+              history.replace("/");
+              Swal.fire({
+                icon: "success",
+                title: "OK",
+                text: data.message,
+              });
+
               // success message
             }
           });

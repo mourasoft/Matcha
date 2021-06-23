@@ -95,12 +95,11 @@ const Chat = () => {
     } else {
       socket.emit("updatentfs", "");
       socket.emit("updatemessages", "");
-      getInstance(token)
-        .post(`http://${config.SERVER_HOST}:1337/inbox`, {
-          login: toLogin,
-          msg: message,
-        })
-        .then((res) => console.log(res));
+      getInstance(token).post(`http://${config.SERVER_HOST}:1337/inbox`, {
+        login: toLogin,
+        msg: message,
+      });
+
       setMessage("");
       let msg = {
         // login: toLogin,
@@ -224,6 +223,7 @@ const Chat = () => {
           >
             <Grid xs={10} item>
               <TextField
+                autoComplete="off"
                 disabled={activeUser.login ? false : true}
                 variant="outlined"
                 id="outlined-basic-email"

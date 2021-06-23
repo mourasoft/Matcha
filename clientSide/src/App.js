@@ -68,8 +68,9 @@ function App() {
       });
   }
   // socket.on('message', msg => );
-
+  // console.log(isloged());
   function isloged() {
+    if (!authContext.auth.login) return null;
     if (authContext.auth.login !== undefined && authContext.auth.login)
       return true;
     else return false;
@@ -177,6 +178,7 @@ function App() {
         <Route
           path="/editprofile"
           render={(props) => {
+            // if (isloged() === null) return null;
             if (isloged() && !completProfile()) {
               return <Profile {...props} />;
             } else if (!isloged()) {
